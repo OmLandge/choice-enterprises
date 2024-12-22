@@ -13,6 +13,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Contact model
+model Contact {
+  id        Int       @id @default(autoincrement())
+  name      String
+  contactMethod String
+  email     String?
+  phone     String?
+  concern   String
+  createdAt DateTime  @default(now())
+}
+
 // User model for authentication
 model User {
   id           Int       @id @default(autoincrement())
