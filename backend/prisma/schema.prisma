@@ -1,0 +1,131 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication
+model User {
+  id           Int       @id @default(autoincrement())
+  username     String    @unique
+  password     String
+  name         String
+  role         Role      @default(EMPLOYEE)
+  employeeCode String?   @unique // Maps to an Employee if applicable
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Optional relation to Employee for linking users to employees
+  employee     Employee? @relation(fields: [employeeCode], references: [code])
+}
+
+// Employee model
+model Employee {
+  id        Int       @id @default(autoincrement())
+  code      String    @unique // Employee code for mapping
+  name      String
+  user      User?
+  uanNo     String?   // Universal Account Number for PF
+  esiNo     String?   // Employee State Insurance Number
+  payslips  Payslip[] // Relation to Payslip
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+}
+
+// Company model
+model Company {
+  id            Int                   @id @default(autoincrement())
+  code          String                @unique // Company code for mapping
+  name          String
+  payslips      Payslip[]             // Relation to Payslip
+  payslipFields CompanyPayslipField[] // Relation to Custom Payslip Fields
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @default(now())
+}
+
+// Company-specific payslip fields
+model CompanyPayslipField {
+  id         Int                 @id @default(autoincrement())
+  companyId  Int                 // Foreign Key to Company
+  company    Company             @relation(fields: [companyId], references: [id])
+  name       String              // Custom field name (e.g., "uniformWashing", "childEdu")
+  type       FieldType           // Amount or Percentage
+  category   FieldCategory       // Earning or Deduction
+  isRequired Boolean             @default(false)
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+  payslipFields PayslipFieldValue[]
+
+  // Unique constraint to ensure a company cannot have the same field name twice
+  @@unique([companyId, name])
+}
+
+// Payslip model
+model Payslip {
+  id             Int       @id @default(autoincrement())
+  employeeCode   String    // Employee code for mapping
+  companyCode    String    // Company code for mapping
+  month          Int       // 1-12
+  year           Int
+  daysWorked     Float     // Days worked in the month
+  rate           Float     // Per day rate
+  basicDa        Float     // Basic + DA
+  hra            Float     // House Rent Allowance
+  normalEarnings Float     // Normal earnings
+  grossWages     Float     // Total gross wages
+  totalDeduction Float     // Total deductions
+  netWages       Float     // Net wages after deductions
+  issuedDate     DateTime  @default(now())
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @default(now())
+
+  // Relations to Employee and Company via their codes
+  employee       Employee? @relation(fields: [employeeCode], references: [code])
+  company        Company?  @relation(fields: [companyCode], references: [code])
+
+  // Unique constraint to avoid duplicate payslips for the same employee and company in a given month and year
+  @@unique([employeeCode, companyCode, month, year])
+
+  // Payslip can have multiple custom fields per company
+  fieldValues    PayslipFieldValue[] // Custom field values for each payslip
+}
+
+// Values for company-specific payslip fields
+model PayslipFieldValue {
+  id        Int                 @id @default(autoincrement())
+  payslipId Int                 // Foreign Key to Payslip
+  payslip   Payslip             @relation(fields: [payslipId], references: [id])
+  fieldId   Int                 // Foreign Key to CompanyPayslipField
+  field     CompanyPayslipField @relation(fields: [fieldId], references: [id])
+  value     Float               // Value of the custom field (Amount or Percentage)
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+
+  // Unique constraint to avoid duplicate values for the same payslip and field
+  @@unique([payslipId, fieldId])
+}
+
+// Enums
+enum Role {
+  ADMIN
+  EMPLOYEE
+}
+
+enum FieldType {
+  AMOUNT
+  PERCENTAGE
+}
+
+enum FieldCategory {
+  EARNING
+  DEDUCTION
+}
