@@ -62,7 +62,7 @@ export default function AdminDashboard() {
   const [totalPayslips, setTotalPayslips] = useState<number>(0);
   const [totalEmployees, setTotalEmployees] = useState<number>(0);
   
-  const { isLoading } = useAuthRedirect();
+  useAuthRedirect();
 
   const userString = sessionStorage.getItem('user');
   const user = userString ? JSON.parse(userString) : null;

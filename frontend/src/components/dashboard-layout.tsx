@@ -2,7 +2,7 @@ import { Key, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 interface DashboardLayoutProps {
   children: React.ReactNode
   name: string

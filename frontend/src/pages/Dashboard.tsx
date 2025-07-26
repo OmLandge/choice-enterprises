@@ -44,7 +44,7 @@ export default function Dashboard() {
     uanNo: '',
     esiNo: '',
   });
-  const { isLoading } = useAuthRedirect();
+  useAuthRedirect();
   
   const userString = sessionStorage.getItem('user');
   const user = userString ? JSON.parse(userString) : null;

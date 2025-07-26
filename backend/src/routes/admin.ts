@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client';
 import { checkAuth } from '../lib/checkAuth';
 import { companySchema, employeeSchema, payslipSchema } from '../lib/zodSchemas';
 import * as bcrypt from 'bcrypt';
-import { object } from 'zod';
 
 const adminRouter = express.Router();
 const prisma = new PrismaClient();
@@ -57,31 +56,6 @@ adminRouter.get('/bulkPayslips', async (req, res) => {
         res.status(400).json({ message: 'Failed to fetch payslips' });
         return;
     }
-});
-
-adminRouter.post('/bulkPayslips', async (req, res) => {
-    const body = req.body;
-    const token = req.headers.authorization as string;
-    const isAuth = checkAuth(token);
-    if (!isAuth) {
-        res.status(401).json({ message: 'Unauthorized' });
-        return;
-    }
-    try {
-        const payslips = await prisma.payslip.createMany({
-            data: body,
-        });
-        if(!payslips) {
-            res.status(400).json({ message: 'Insertion failed' });
-            return;
-        }
-    }catch(err) {
-        res.status(400).json({ message: 'Insertion failed' });
-        return;
-    }
-
-
-    res.status(200).json({message: "Insertion successful"});
 });
 
 adminRouter.get("/companies", async (req, res) => {
