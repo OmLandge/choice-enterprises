@@ -10,7 +10,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgresql://postgres:postgres@localhost:5432/postgres?schema=public"
 }
 
 // Contact model
@@ -44,12 +44,12 @@ model Employee {
   id        Int       @id @default(autoincrement())
   code      String    @unique // Employee code for mapping
   name      String
-  user      User?
+  user      User?     
   uanNo     String?   // Universal Account Number for PF
   esiNo     String?   // Employee State Insurance Number
   payslips  Payslip[] // Relation to Payslip
   createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 // Company model
@@ -60,16 +60,15 @@ model Company {
   payslips      Payslip[]             // Relation to Payslip
   payslipFields CompanyPayslipField[] // Relation to Custom Payslip Fields
   createdAt     DateTime              @default(now())
-  updatedAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
 }
 
 // Company-specific payslip fields
 model CompanyPayslipField {
   id         Int                 @id @default(autoincrement())
-  companyId  Int                 // Foreign Key to Company
-  company    Company             @relation(fields: [companyId], references: [id])
+  companyCode String                 // Foreign Key to Company
+  company    Company             @relation(fields: [companyCode], references: [code])
   name       String              // Custom field name (e.g., "uniformWashing", "childEdu")
-  type       FieldType           // Amount or Percentage
   category   FieldCategory       // Earning or Deduction
   isRequired Boolean             @default(false)
   createdAt  DateTime            @default(now())
@@ -77,7 +76,7 @@ model CompanyPayslipField {
   payslipFields PayslipFieldValue[]
 
   // Unique constraint to ensure a company cannot have the same field name twice
-  @@unique([companyId, name])
+  @@unique([companyCode, name])
 }
 
 // Payslip model
@@ -87,17 +86,14 @@ model Payslip {
   companyCode    String    // Company code for mapping
   month          Int       // 1-12
   year           Int
-  daysWorked     Float     // Days worked in the month
-  rate           Float     // Per day rate
-  basicDa        Float     // Basic + DA
-  hra            Float     // House Rent Allowance
-  normalEarnings Float     // Normal earnings
+  daysWorked     Int     // Days worked in the month
+  otHours        Int     // OT hours
+  monthlyGross   Float     // Monthly gross
   grossWages     Float     // Total gross wages
   totalDeduction Float     // Total deductions
   netWages       Float     // Net wages after deductions
-  issuedDate     DateTime  @default(now())
   createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   // Relations to Employee and Company via their codes
   employee       Employee? @relation(fields: [employeeCode], references: [code])
@@ -129,11 +125,6 @@ model PayslipFieldValue {
 enum Role {
   ADMIN
   EMPLOYEE
-}
-
-enum FieldType {
-  AMOUNT
-  PERCENTAGE
 }
 
 enum FieldCategory {

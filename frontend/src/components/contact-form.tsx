@@ -8,12 +8,11 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { BACKEND_URL } from '@/config'
 import axios from 'axios'
-
 interface ContactFormData{
   name: string
   contactMethod: 'email' | 'phone'
-  email: string | null
-  phone: string | null
+  email: string
+  phone: string
   concern: string
 }
 
@@ -23,19 +22,39 @@ export function ContactForm() {
   const [formData, setFormData] = useState<ContactFormData>({
     name: '',
     contactMethod: 'email',
-    email: null,
-    phone: null,
+    email: '',
+    phone: '',
     concern: '',
   });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
-    // Add your form submission logic here
-    const res = await axios.post(`${BACKEND_URL}/contact`, formData);
-    if(res.status === 200) {
+    try{
+      const res = await axios.post(`${BACKEND_URL}/contact`, formData);
+      if(res.status === 200) {
+        setIsLoading(false)
+        setFormData({
+          name: '',
+          contactMethod: 'email',
+          email: '',
+          phone: '',
+          concern: '',
+        });
+        alert("Contact request submitted successfully");
+        return;
+      }
+    }catch(err){
       setIsLoading(false)
-      return;
+      setFormData({
+        name: '',
+        contactMethod: 'email',
+        email: '',
+        phone: '',
+        concern: '',
+      });
+      alert("Contact request failed");
+      console.log(err);
     }
   }
 

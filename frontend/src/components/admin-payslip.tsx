@@ -6,7 +6,7 @@ import { BasePayslip } from './base-payslip'
 import { PayslipProps } from '@/lib/types'
 
 const getPayslipBulk = async (company: string, month: number, year: number) => {
-  const response = await axios.get(`${BACKEND_URL}/api/admin/bulkPayslips?companyCode=SOFT003&month=${month}&year=${year}`,{   // TODO: Change companyCode
+  const response = await axios.get(`${BACKEND_URL}/api/admin/bulkPayslips?companyCode=${company}&month=${month}&year=${year}`,{
     headers: {
       Authorization: `${localStorage.getItem('token')}`
     }
@@ -18,12 +18,11 @@ const getPayslipBulk = async (company: string, month: number, year: number) => {
   }
 }
 
-export function AdminPayslip({ month, year, company, onPrint }: PayslipProps) {
+export function AdminPayslip({ month, year, company, onPrint, setTotalPayslips }: PayslipProps) {
   const payslipRef = useRef<HTMLDivElement>(null)
   const [payslips, setPayslips] = useState<any[]>([]);
   const [isPayslip, setIsPayslip] = useState<boolean>(false);
 
-  // Setup print functionality
   const handlePrint = useReactToPrint({
     contentRef: payslipRef,
   })
@@ -32,14 +31,21 @@ export function AdminPayslip({ month, year, company, onPrint }: PayslipProps) {
     getPayslipBulk(company!, month, year).then(data => {
         if(data.length === 0) {
             setIsPayslip(false);
+            setPayslips([]);
             return;
         }
         setPayslips(data);
         setIsPayslip(true);
+        if(setTotalPayslips) {
+          setTotalPayslips(data.length);
+        }
+    }).catch(error => {
+      console.log(error);
+      setIsPayslip(false);
+      setPayslips([]);
     });
   }, [company, month, year])
 
-  // Make handlePrint available to parent component
   useEffect(() => {
     if (onPrint) {
       onPrint(handlePrint);
@@ -50,12 +56,10 @@ export function AdminPayslip({ month, year, company, onPrint }: PayslipProps) {
     <>
     <div ref={payslipRef}>
     {isPayslip && payslips.map((payslip, index) => <> 
-      <div className='mb-[200px]'>
-        <BasePayslip payslip={payslip} key={index} />
-      </div> 
+      <BasePayslip payslip={payslip} key={index} />
     </>)}
     </div>
-    {!isPayslip && <div>no payslips</div>}
+    {!isPayslip && <div className='w-full flex justify-center items-center h-[300px] text-muted-foreground'>No payslip found</div>}
     </>
   )
 }

@@ -17,4 +17,5 @@ export interface PayslipProps {
       otHours: number
     }
     onPrint?: (handler: () => void) => void;
+    setTotalPayslips?: (total: number) => void;
   }

@@ -1,15 +1,15 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { User, Lock, Eye, EyeOff } from 'lucide-react'
+import { Lock, Eye, EyeOff } from 'lucide-react'
 import { BACKEND_URL } from '@/config';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { SVGBackground } from './svg-background';
 
-export default function LoginForm() {
+export default function UpdatePassword() {
   const [formData, setFormData] = useState({
-    username: '',
-    password: '',
+    previousPassword: '',
+    newPassword: '',
   });
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -19,17 +19,27 @@ export default function LoginForm() {
     e.preventDefault()
     setIsLoading(true)
     try{
-    const response = await axios.post(`${BACKEND_URL}/api/auth/login`, formData);
-    localStorage.setItem('token', response.data.token);
-    sessionStorage.setItem('user', JSON.stringify({name: response.data.name, role: response.data.role}));
-    if (response.data.role === 'ADMIN') {
+    const response = await axios.post(`${BACKEND_URL}/api/auth/update-password`, formData, {
+        headers: {
+            Authorization: `${localStorage.getItem('token')}`
+        }
+    });
+    if(response.status !== 200) {
+      alert("Update password failed");
+      return;
+    }
+    alert("Update password successful");
+    const userString = sessionStorage.getItem('user');
+    const user = userString ? JSON.parse(userString) : null;
+    const role = user?.role || 'User';
+    if (role === 'ADMIN') {
       navigate('/admin');
     }
     navigate('/dashboard');
     setTimeout(() => setIsLoading(false), 1000)
     }catch(err){
       setIsLoading(false)
-      alert("Login failed");
+      alert("Update password failed");
       console.log(err);
     }
   }
@@ -61,36 +71,36 @@ export default function LoginForm() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="relative">
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-              Username
+            <label htmlFor="previousPassword" className="block text-sm font-medium text-gray-700 mb-1">
+              Previous Password
             </label>
             <div className="relative">
               <input
-                id="username"
-                name="username"
+                id="previousPassword"
+                name="previousPassword"
                 type="text"
                 required
-                placeholder="Enter your username"
+                placeholder="Enter your previous password"
                 className="pl-10 pr-3 py-2 w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, previousPassword: e.target.value })}
               />
-              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
             </div>
           </div>
 
           <div className="relative">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password
+            <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
+              New Password
             </label>
             <div className="relative">
               <input
-                id="password"
-                name="password"
+                id="newPassword"
+                name="newPassword"
                 type={showPassword ? "text" : "password"}
                 required
                 placeholder="Enter your password"
                 className="pl-10 pr-10 py-2 w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
               />
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
               <button
@@ -115,7 +125,7 @@ export default function LoginForm() {
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
               ) : (
-                'Sign in'
+                'Update Password'
               )}
             </button>
           </div>

@@ -1,10 +1,10 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient, Role, FieldCategory } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
-// Utility function to generate a random date
+// Utility function to generate a random date within a range
 function randomDate(start: Date, end: Date): Date {
   return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
 }
@@ -14,7 +14,78 @@ function generateEmployeeCode(companyCode: string): string {
   return `${companyCode}-${faker.string.numeric(4)}`;
 }
 
+// Custom field templates for different companies
+const companyFieldTemplates = [
+  // Company 1 - IT Company
+  [
+    // Earnings (5)
+    { name: 'basic_salary', category: FieldCategory.EARNING, isRequired: true },
+    { name: 'hra', category: FieldCategory.EARNING, isRequired: true },
+    { name: 'conveyance_allowance', category: FieldCategory.EARNING, isRequired: false },
+    { name: 'medical_allowance', category: FieldCategory.EARNING, isRequired: false },
+    { name: 'performance_bonus', category: FieldCategory.EARNING, isRequired: false },
+    // Deductions (3)
+    { name: 'professional_tax', category: FieldCategory.DEDUCTION, isRequired: true },
+    { name: 'income_tax', category: FieldCategory.DEDUCTION, isRequired: true },
+    { name: 'provident_fund', category: FieldCategory.DEDUCTION, isRequired: true },
+  ],
+  // Company 2 - Manufacturing
+  [
+    // Earnings (5)
+    { name: 'basic_wage', category: FieldCategory.EARNING, isRequired: true },
+    { name: 'dearness_allowance', category: FieldCategory.EARNING, isRequired: true },
+    { name: 'overtime', category: FieldCategory.EARNING, isRequired: false },
+    { name: 'shift_allowance', category: FieldCategory.EARNING, isRequired: false },
+    { name: 'production_incentive', category: FieldCategory.EARNING, isRequired: false },
+    // Deductions (3)
+    { name: 'professional_tax', category: FieldCategory.DEDUCTION, isRequired: true },
+    { name: 'provident_fund', category: FieldCategory.DEDUCTION, isRequired: true },
+    { name: 'esi_contribution', category: FieldCategory.DEDUCTION, isRequired: true },
+  ],
+  // Company 3 - Retail
+  [
+    // Earnings (5)
+    { name: 'basic_pay', category: FieldCategory.EARNING, isRequired: true },
+    { name: 'hra', category: FieldCategory.EARNING, isRequired: true },
+    { name: 'sales_commission', category: FieldCategory.EARNING, isRequired: false },
+    { name: 'incentive_bonus', category: FieldCategory.EARNING, isRequired: false },
+    { name: 'holiday_pay', category: FieldCategory.EARNING, isRequired: false },
+    // Deductions (3)
+    { name: 'professional_tax', category: FieldCategory.DEDUCTION, isRequired: true },
+    { name: 'income_tax', category: FieldCategory.DEDUCTION, isRequired: true },
+    { name: 'pf_contribution', category: FieldCategory.DEDUCTION, isRequired: true },
+  ],
+  // Company 4 - Healthcare
+  [
+    // Earnings (5)
+    { name: 'basic_salary', category: FieldCategory.EARNING, isRequired: true },
+    { name: 'hra', category: FieldCategory.EARNING, isRequired: true },
+    { name: 'night_shift_allowance', category: FieldCategory.EARNING, isRequired: false },
+    { name: 'medical_allowance', category: FieldCategory.EARNING, isRequired: false },
+    { name: 'on_call_allowance', category: FieldCategory.EARNING, isRequired: false },
+    // Deductions (3)
+    { name: 'professional_tax', category: FieldCategory.DEDUCTION, isRequired: true },
+    { name: 'income_tax', category: FieldCategory.DEDUCTION, isRequired: true },
+    { name: 'health_insurance', category: FieldCategory.DEDUCTION, isRequired: true },
+  ],
+  // Company 5 - Education
+  [
+    // Earnings (5)
+    { name: 'basic_pay', category: FieldCategory.EARNING, isRequired: true },
+    { name: 'da', category: FieldCategory.EARNING, isRequired: true },
+    { name: 'hra', category: FieldCategory.EARNING, isRequired: true },
+    { name: 'transport_allowance', category: FieldCategory.EARNING, isRequired: false },
+    { name: 'research_grant', category: FieldCategory.EARNING, isRequired: false },
+    // Deductions (3)
+    { name: 'professional_tax', category: FieldCategory.DEDUCTION, isRequired: true },
+    { name: 'income_tax', category: FieldCategory.DEDUCTION, isRequired: true },
+    { name: 'nps_contribution', category: FieldCategory.DEDUCTION, isRequired: true },
+  ],
+];
+
 async function main() {
+  console.log('Starting seed...');
+  
   // Clear existing data
   await prisma.payslipFieldValue.deleteMany();
   await prisma.companyPayslipField.deleteMany();
@@ -22,187 +93,160 @@ async function main() {
   await prisma.employee.deleteMany();
   await prisma.company.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.contact.deleteMany();
 
-  // Create Companies
-  const companiesData = [
-    { code: 'TECH001', name: 'TechInnovate Solutions' },
-    { code: 'CONS002', name: 'Global Consulting Group' },
-    { code: 'SOFT003', name: 'Software Dynamics Inc.' },
-    { code: 'PROD004', name: 'Production Pioneers' },
-    { code: 'CONS005', name: 'Consulting Experts Ltd.' }
+  // Create 5 Companies
+  const companies = [];
+  const companyNames = [
+    'Tech Solutions Inc.',
+    'Manufacturing Corp',
+    'Retail Group',
+    'Healthcare Systems',
+    'Education First'
   ];
 
-  const companies = await Promise.all(
-    companiesData.map(company => 
-      prisma.company.create({ data: company })
-    )
-  );
+  for (let i = 0; i < 5; i++) {
+    const company = await prisma.company.create({
+      data: {
+        code: `COMP${String(i + 1).padStart(3, '0')}`,
+        name: companyNames[i],
+      },
+    });
+    companies.push(company);
+    console.log(`Created company: ${company.name}`);
+  }
 
-  // Create Custom Payslip Fields for each Company
-  const customFieldsData = companies.flatMap(company => [
-    {
-      companyId: company.id,
-      name: 'uniformWashing',
-      type: 'AMOUNT',
-      category: 'DEDUCTION',
-      isRequired: false
-    },
-    {
-      companyId: company.id,
-      name: 'childEducation',
-      type: 'AMOUNT',
-      category: 'EARNING',
-      isRequired: false
-    },
-    {
-      companyId: company.id,
-      name: 'performanceBonus',
-      type: 'PERCENTAGE',
-      category: 'EARNING',
-      isRequired: false
-    }
-  ] as Prisma.CompanyPayslipFieldCreateManyInput[]);
-
-  await prisma.companyPayslipField.createMany({
-    data: customFieldsData
-  });
-
-  // Create Employees and Users
-  const employeesData = [];
-  const usersData = [];
-
-  for (const company of companies) {
-    for (let i = 0; i < 50; i++) {
-      const firstName = faker.person.firstName();
-      const lastName = faker.person.lastName();
-      const employeeCode = generateEmployeeCode(company.code);
-
-      // Employee data
-      const employeeData = {
-        code: employeeCode,
-        name: `${firstName} ${lastName}`,
-        uanNo: faker.string.numeric(12),
-        esiNo: faker.string.numeric(10)
-      };
-
-      // User data
-      const username = faker.internet.username({ firstName, lastName });
-      const hashedPassword = await bcrypt.hash('Password123!', 10);
-
-      employeesData.push(employeeData);
-      usersData.push({
-        username,
-        password: hashedPassword,
-        name: `${firstName} ${lastName}`,
-        role: i < 5 ? 'ADMIN' : 'EMPLOYEE',
-        employeeCode
+  // Create custom fields for each company
+  for (let i = 0; i < companies.length; i++) {
+    const company = companies[i];
+    const fields = companyFieldTemplates[i];
+    
+    for (const field of fields) {
+      await prisma.companyPayslipField.create({
+        data: {
+          companyCode: company.code,
+          name: field.name,
+          category: field.category,
+          isRequired: field.isRequired,
+        },
       });
     }
+    console.log(`Created custom fields for company: ${company.name}`);
   }
 
-  // Create Employees
-  await prisma.employee.createMany({
-    data: employeesData
+  // Create admin user
+  const hashedPassword = await bcrypt.hash('admin123', 10);
+  const admin = await prisma.user.create({
+    data: {
+      username: 'admin',
+      password: hashedPassword,
+      name: 'Admin User',
+      role: Role.ADMIN,
+    },
   });
+  console.log(`Created admin user: ${admin.username}`);
 
-  // Create Users
-  await prisma.user.createMany({
-    data: usersData as Prisma.UserCreateManyInput[]
-  });
-
-  // Create Payslips (2 years of historical data)
+  // Create employees and payslips for each company
   const currentDate = new Date();
-  const payslipsData = [];
-  const payslipFieldValuesData: any[] = [];
-
+  
   for (const company of companies) {
-    // Find employees for this company
-    const employees = await prisma.employee.findMany({
-      where: { 
-        code: { 
-          startsWith: company.code 
-        } 
-      }
+    // Get company fields for payslip values
+    const companyFields = await prisma.companyPayslipField.findMany({
+      where: { companyCode: company.code },
     });
 
-    // Find company-specific custom fields
-    const customFields = await prisma.companyPayslipField.findMany({
-      where: { companyId: company.id }
-    });
+    // Create 5 employees for this company
+    for (let empIndex = 0; empIndex < 5; empIndex++) {
+      const employeeCode = generateEmployeeCode(company.code);
+      const firstName = faker.person.firstName();
+      const lastName = faker.person.lastName();
+      const fullName = `${firstName} ${lastName}`;
+      
+      // Create employee
+      const employee = await prisma.employee.create({
+        data: {
+          code: employeeCode,
+          name: fullName,
+          uanNo: faker.string.numeric(12),
+          esiNo: faker.string.numeric(17),
+        },
+      });
+      console.log(`Created employee: ${employee.name} (${employee.code})`);
 
-    // Generate payslips for 24 months (2 years)
-    for (const employee of employees) {
-      for (let month = 0; month < 24; month++) {
-        const payslipDate = new Date(currentDate.getFullYear() - 2, month, 1);
-        
-        // Calculate basic details
-        const daysWorked = Math.min(faker.number.float({ min: 20, max: 30, fractionDigits: 1 }), 30);
-        const rate = faker.number.float({ min: 300, max: 1000, fractionDigits: 2 });
-        const basicDa = daysWorked * rate * 0.4;
-        const hra = daysWorked * rate * 0.2;
-        const normalEarnings = daysWorked * rate;
-        const grossWages = basicDa + hra + normalEarnings;
-
-        const payslipData = {
+      // Create user for employee
+      const user = await prisma.user.create({
+        data: {
+          username: `${firstName.toLowerCase()}.${lastName.toLowerCase()}`,
+          password: await bcrypt.hash('password123', 10),
+          name: fullName,
+          role: Role.EMPLOYEE,
           employeeCode: employee.code,
-          companyCode: company.code,
-          month: (payslipDate.getMonth() + 1),
-          year: payslipDate.getFullYear(),
-          daysWorked,
-          rate,
-          basicDa,
-          hra,
-          normalEarnings,
-          grossWages,
-          totalDeduction: faker.number.float({ min: 500, max: grossWages * 0.3, fractionDigits: 2 }),
-          netWages: 0, // Will be calculated
-          issuedDate: payslipDate
-        };
+        },
+      });
 
-        // Calculate net wages
-        payslipData.netWages = payslipData.grossWages - payslipData.totalDeduction;
+      // Create 5 payslips for the last 5 months
+      for (let monthOffset = 0; monthOffset < 5; monthOffset++) {
+        const targetDate = new Date(currentDate);
+        targetDate.setMonth(targetDate.getMonth() - monthOffset);
+        
+        const month = targetDate.getMonth() + 1; // 1-12
+        const year = targetDate.getFullYear();
+        
+        // Generate random values for payslip
+        const monthlyGross = faker.number.float({ min: 25000, max: 150000, fractionDigits: 2 });
+        const daysWorked = faker.number.int({ min: 22, max: 26 });
+        const otHours = faker.number.int({ min: 0, max: 20 });
+        
+        // Calculate gross wages (monthly + OT)
+        const hourlyRate = monthlyGross / (22 * 8); // Assuming 22 working days, 8 hours per day
+        const otWages = otHours * hourlyRate * 1.5; // 1.5x for OT
+        const grossWages = monthlyGross + otWages;
+        
+        // Calculate deductions (random percentage of gross)
+        const totalDeduction = grossWages * faker.number.float({ min: 0.1, max: 0.3, fractionDigits: 2 });
+        const netWages = grossWages - totalDeduction;
+        
+        // Create payslip
+        const payslip = await prisma.payslip.create({
+          data: {
+            employeeCode: employee.code,
+            companyCode: company.code,
+            month,
+            year,
+            daysWorked,
+            otHours,
+            monthlyGross,
+            grossWages,
+            totalDeduction,
+            netWages,
+          },
+        });
 
-        payslipsData.push(payslipData);
-
-        // Generate custom field values for each payslip
-        for (const field of customFields) {
+        // Create field values for this payslip
+        for (const field of companyFields) {
+          // Generate random value based on field type
           let value = 0;
-          if (field.type === 'AMOUNT') {
-            value = faker.number.float({ min: 50, max: 500, fractionDigits: 2 });
-          } else if (field.type === 'PERCENTAGE') {
-            value = faker.number.float({ min: 1, max: 10, fractionDigits: 2 });
+          if (field.category === FieldCategory.EARNING) {
+            // Earning fields are typically a percentage of basic pay
+            value = monthlyGross * faker.number.float({ min: 0.05, max: 0.4, fractionDigits: 2 });
+          } else {
+            // Deduction fields are typically a smaller percentage
+            value = monthlyGross * faker.number.float({ min: 0.01, max: 0.1, fractionDigits: 2 });
           }
-
-          payslipFieldValuesData.push({
-            fieldId: field.id,
-            value
+          
+          await prisma.payslipFieldValue.create({
+            data: {
+              payslipId: payslip.id,
+              fieldId: field.id,
+              value: parseFloat(value.toFixed(2)),
+            },
           });
         }
+        
+        console.log(`  - Created payslip for ${month}/${year} (${payslip.netWages.toFixed(2)})`);
       }
     }
   }
-
-  // Create Payslips
-  const createdPayslips = await prisma.payslip.createMany({
-    data: payslipsData
-  });
-
-  // Find the created payslips to link field values
-  const payslips = await prisma.payslip.findMany();
-
-  // Create Payslip Field Values
-  const finalPayslipFieldValues = payslips.flatMap((payslip, index) => 
-    payslipFieldValuesData
-      .slice(index * customFieldsData.length, (index + 1) * customFieldsData.length)
-      .map(fieldValue => ({
-        ...fieldValue,
-        payslipId: payslip.id
-      }))
-  );
-
-  await prisma.payslipFieldValue.createMany({
-    data: finalPayslipFieldValues
-  });
 
   console.log('Seeding completed successfully!');
 }

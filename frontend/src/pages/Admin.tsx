@@ -1,37 +1,93 @@
-import { useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { DashboardLayout } from '@/components/dashboard-layout'
 import { MonthYearPicker } from '@/components/month-year-picker'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Building2, Mails, Printer, Upload } from 'lucide-react'
+import { Mails, Printer, Upload, User } from 'lucide-react'
 import { useAuthRedirect } from '@/hooks/useAuthRedirect'
 import { Button } from '@/components/ui/button'
-import { parseCSV } from '@/lib/csvParser'
 import { CompanyPicker } from '@/components/company-picker'
 import { AdminPayslip } from '@/components/admin-payslip'
+import axios from 'axios'
+import { BACKEND_URL } from '@/config'
+import UploadData from '@/components/upload-data'
 
-// Mock employee data
-// const employeeData = {
-//   code: "EMP001",
-//   name: "KETAN PRABHAKAR DUMBARE",
-//   uan: "100556831627",
-//   esiNo: "NA",
-//   monthlyGross: 43367,
-//   presentDays: 30,
-//   otHours: 0
-// }
+const getCompanies = async () => {
+  const response = await axios.get(`${BACKEND_URL}/api/admin/companies`,{
+    headers: {
+      Authorization: `${localStorage.getItem('token')}`
+    }
+  });
+  if(response.status === 200) {
+    return response.data;
+  }else {
+    return [];
+  }
+}
+
+const getTotalEmployees = async () => {
+  const response = await axios.get(`${BACKEND_URL}/api/admin/total-employees`,{
+    headers: {
+      Authorization: `${localStorage.getItem('token')}`
+    }
+  });
+  if(response.status === 200) {
+    return response.data;
+  }else {
+    return 0;
+  }
+}
+
+const getTotalContacts = async () => {
+  const response = await axios.get(`${BACKEND_URL}/api/admin/total-contacts`,{
+    headers: {
+      Authorization: `${localStorage.getItem('token')}`
+    }
+  });
+  if(response.status === 200) {
+    return response.data;
+  }else {
+    return 0;
+  }
+}
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
   const [printHandler, setPrintHandler] = useState<(() => void) | null>(null)
-  const {name} = JSON.parse(sessionStorage.getItem('user') as string);
-  const [file, setFile] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [company, setCompany] = useState<string>('');
+  const [companies, setCompanies] = useState<any[]>([]);
+  const [contacts, setContacts] = useState(0);
+  const [totalPayslips, setTotalPayslips] = useState<number>(0);
+  const [totalEmployees, setTotalEmployees] = useState<number>(0);
   
-  useAuthRedirect();
+  const { isLoading } = useAuthRedirect();
+
+  const userString = sessionStorage.getItem('user');
+  const user = userString ? JSON.parse(userString) : null;
+  const name = user?.name || 'User';
+
+  useEffect(() => {
+    getCompanies().then(data => {
+      setCompanies(data);
+    }).catch(error => {
+      console.log(error);
+      setCompanies([]);
+    })
+    getTotalContacts().then(data => {
+      setContacts(data);
+    }).catch(error => {
+      console.log(error);
+      setContacts(0);
+    })
+    getTotalEmployees().then(data => {
+      setTotalEmployees(data);
+    }).catch(error => {
+      console.log(error);
+      setTotalEmployees(0);
+    })
+  }, [])
 
   const handleDateSelect = (month: number, year: number) => {
     setSelectedMonth(month)
@@ -42,45 +98,24 @@ export default function AdminDashboard() {
     setCompany(company)
   }
 
+  const handleChangePassword = () => {
+    navigate('/change-password');
+    window.location.reload();
+  }
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     sessionStorage.removeItem('user');
+    localStorage.setItem("isLoggedIn", "false");
     navigate('/');
-  }
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if(!e.target.files) { alert('Please select a file'); return; }
-    if (e.target?.files?.length > 1) { 
-      alert('Please select only one file');
-      return;
-    }
-    if(e.target.files[0].name.endsWith('.csv')) {
-      setFile(e.target.files[0]);
-    }else {
-      alert('Please select a CSV file');
-      return;
-    }
-  }
-
-  const handleFileSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (file) {
-     const data = await parseCSV(file);
-     console.log(data);
-    }
-  }
-
-  const handleButtonClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if(fileInputRef.current) {
-      fileInputRef.current?.click();
-    }
+    window.location.reload();
   }
 
   return (
     <DashboardLayout 
       name={name}
       onLogout={handleLogout}
+      changePassword={handleChangePassword}
     >
       <div className="space-y-6">
         <div>
@@ -89,37 +124,38 @@ export default function AdminDashboard() {
         <div className="grid gap-4 md:grid-cols-3">
           <Card className='bg-brandBackground'>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-brandText">Upload CSV</CardTitle>
+              <CardTitle className="text-sm font-medium text-brandText">Upload Data</CardTitle>
               <Upload className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              {!file && 
-                <form>
-                  <input ref={fileInputRef} type="file" name="file" className="hidden" onChange={handleFileChange}  />
-                  <Button variant="outline" title="Upload CSV" onClick={handleButtonClick} >
-                    <Upload className="h-4 w-4" /> CSV File
-                  </Button>
-                </form>
-              }
-              {
-                file && 
-                <div className="flex items-center gap-2">
-                  {(file.name.length > 30) ? <p className="text-md">{file.name.substring(0, 30)}...</p> : <p className="text-md">{file.name}</p>}
-                  <Button variant="outline" title="Upload CSV" onClick={handleFileSubmit} >
-                    <Upload className="h-4 w-4" />
-                  </Button>
-                </div>
-              }
+            <CardContent className='flex gap-1'>
+              <UploadData
+                isCompanyData={true}
+                isPayslipData={false}
+                isEmployeeData={false}
+                companies={companies}
+              />
+              <UploadData
+                isCompanyData={false}
+                isPayslipData={true}
+                isEmployeeData={false}
+                companies={companies}
+              />
+              <UploadData
+                isCompanyData={false}
+                isPayslipData={false}
+                isEmployeeData={true}
+                companies={companies}
+              />
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Companies</CardTitle>
-              <Building2 className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Employees</CardTitle>
+              <User className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">12</div>
-              <p className="text-xs text-muted-foreground">Across 3 locations</p>
+              <div className="text-2xl font-bold">{totalEmployees}</div>
+              <p className="text-xs text-muted-foreground">Employees across {companies.length} companies</p>
             </CardContent>
           </Card>
           <Card>
@@ -129,10 +165,13 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent className='flex items-center justify-between gap-2'>
               <div>
-                <div className="text-2xl font-bold">8</div>
+                <div className="text-2xl font-bold">{contacts}</div>
                 <p className="text-xs text-muted-foreground">Total Contact Requests</p>
               </div>
-              <Button variant="outline" size="icon" title="View All" onClick={() => navigate('/admin/contacts')}>
+              <Button variant="outline" size="icon" title="View All" onClick={() => {
+                navigate('/admin/contacts');
+                window.location.reload();
+              }}>
                 <Mails className="h-4 w-4" />
               </Button>
             </CardContent>
@@ -145,22 +184,23 @@ export default function AdminDashboard() {
             <div className='flex items-center gap-4'>
               <Button 
                 variant="outline" 
-                size="icon"
                 onClick={() => printHandler?.()}
                 title="Print Payslip"
               >
                 <Printer className="h-4 w-4" />
+                {totalPayslips > 0 ? totalPayslips : ""}
               </Button>
-              <CompanyPicker onSelect={handleCompanySelect} />
+              <CompanyPicker companies={companies} onSelect={handleCompanySelect} />
               <MonthYearPicker onSelect={handleDateSelect} />
             </div>
           </div>
-          <div className='max-h-[1000px] overflow-y-auto'>
+          <div className='max-h-[950px] custom-scroll overflow-y-auto bg-white border rounded-lg max-w-3xl mx-auto overflow-auto shadow-sm'>
             <AdminPayslip
               month={selectedMonth}
               year={selectedYear}
               company={company}
               onPrint={(handler) => setPrintHandler(() => handler)}
+              setTotalPayslips={(total) => setTotalPayslips(total)}
             />
           </div>
         </div>

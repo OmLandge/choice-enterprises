@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { DashboardLayout } from '@/components/dashboard-layout'
 import { MonthYearPicker } from '@/components/month-year-picker'
@@ -7,25 +7,48 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { File, Mail, Printer, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { StaffPayslip } from '@/components/staff-payslip'
+import axios from 'axios'
+import { BACKEND_URL } from '@/config'
 
-// Mock employee data
-// const employeeData = {
-//   name: "KETAN PRABHAKAR DUMBARE",
-//   uan: "100556831627",
-//   esiNo: "NA",
-//   monthlyGross: 43367,
-//   presentDays: 30,
-//   otHours: 0
-// }
+const getTotalPayslips = async () => {
+    const response = await axios.get(`${BACKEND_URL}/api/user/total-payslips`,{
+        headers: {
+            Authorization: `${localStorage.getItem('token')}`
+        }
+    });
+    if(response.status === 200) {
+        return response.data;
+    }else {
+        return [];
+    }
+}
+
+interface EmployeeDetails {
+    id: string;
+    code: string;
+    name: string;
+    uanNo: string;
+    esiNo: string;
+}
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
   const [printHandler, setPrintHandler] = useState<(() => void) | null>(null)
-  const {name} = JSON.parse(sessionStorage.getItem('user') as string);
-
-  useAuthRedirect();
+  const [totalPayslips, setTotalPayslips] = useState(0);
+  const [employeeDetails, setEmployeeDetails] = useState<EmployeeDetails>({
+    id: '',
+    code: '',
+    name: '',
+    uanNo: '',
+    esiNo: '',
+  });
+  const { isLoading } = useAuthRedirect();
+  
+  const userString = sessionStorage.getItem('user');
+  const user = userString ? JSON.parse(userString) : null;
+  const name = user?.name || 'User';
 
   const handleDateSelect = (month: number, year: number) => {
     setSelectedMonth(month)
@@ -33,15 +56,35 @@ export default function Dashboard() {
   }
 
   const handleLogout = () => {
+    // Clear auth data
     localStorage.removeItem('token');
     sessionStorage.removeItem('user');
+    localStorage.setItem("isLoggedIn", "false");
+    
+    // Navigate to login page
     navigate('/');
+    
+    // Force a full page reload to ensure all auth state is reset
+    window.location.reload();
   }
+
+  const handleChangePassword = () => {
+    navigate('/change-password');
+    window.location.reload();
+  }
+
+  useEffect(() => {
+    getTotalPayslips().then(data => {
+        setTotalPayslips(data.count);
+        setEmployeeDetails(data.employeeDetails);
+    });
+  }, [])
 
   return (
     <DashboardLayout 
       name={name} 
       onLogout={handleLogout}
+      changePassword={handleChangePassword}
     >
       <div className="space-y-6">
         <div>
@@ -54,7 +97,7 @@ export default function Dashboard() {
               <File className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">245</div>
+              <div className="text-2xl font-bold">{totalPayslips}</div>
               <p className="text-xs text-muted-foreground">numbers of payslips</p>
             </CardContent>
           </Card>
@@ -64,8 +107,8 @@ export default function Dashboard() {
               <User className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <p className="text-md">UAN No. 100556831627</p>
-              <p className="text-md">ESI No. NA</p>
+              <p className="text-md">UAN No. {employeeDetails?.uanNo}</p>
+              <p className="text-md">ESI No. {employeeDetails?.esiNo}</p>
               {/* <div className="text-2xl font-bold">12</div> */}
             </CardContent>
           </Card>
@@ -75,7 +118,10 @@ export default function Dashboard() {
               <Mail className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <Button variant="outline" title="Contact Us" onClick={() => navigate('/contact')}>
+              <Button variant="outline" title="Contact Us" onClick={() => {
+                navigate('/contact')
+                window.location.reload();
+                }}>
                 <Mail className="h-4 w-4" /> Contact Us
               </Button>
             </CardContent>
@@ -97,14 +143,15 @@ export default function Dashboard() {
             <MonthYearPicker onSelect={handleDateSelect} />
           </div>
         </div>
+        <div className="bg-white border rounded-lg max-w-3xl mx-auto overflow-auto shadow-sm">
         <StaffPayslip
           month={selectedMonth}
           year={selectedYear}
           onPrint={(handler) => setPrintHandler(() => handler)}
         />
+        </div>
       </div>
     </div>
     </DashboardLayout>
   )
 }
-

@@ -23,7 +23,6 @@ export function StaffPayslip({ month, year, onPrint }: PayslipProps) {
   const [payslip, setPayslip] = useState([]);
   const [isPayslip, setIsPayslip] = useState<boolean>(false);
 
-  // Setup print functionality
   const handlePrint = useReactToPrint({
     contentRef: payslipRef,
   })
@@ -32,14 +31,19 @@ export function StaffPayslip({ month, year, onPrint }: PayslipProps) {
     getPayslip(month, year).then(data => {
         if(data.length === 0) {
             setIsPayslip(false);
+            setPayslip([]);
             return;
         }
         setPayslip(data!)
         setIsPayslip(true);
+    }).catch(error => {
+      console.log(error);
+      setIsPayslip(false);
+      setPayslip([]);
     });
   }, [month, year])
 
-  // Make handlePrint available to parent component
+
   useEffect(() => {
     if (onPrint) {
       onPrint(handlePrint);
@@ -51,7 +55,7 @@ export function StaffPayslip({ month, year, onPrint }: PayslipProps) {
     <div ref={payslipRef}>
     {isPayslip && <BasePayslip payslip={payslip} />}
     </div>
-    {!isPayslip && <div>no payslips</div>}
+    {!isPayslip && <div className='w-full flex justify-center items-center h-[300px] text-muted-foreground'>No payslip found</div>}
     </>
   )
 }
