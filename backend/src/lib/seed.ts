@@ -135,16 +135,14 @@ async function main() {
   }
 
   // Create admin user
-  const hashedPassword = await bcrypt.hash('admin123', 10);
   const admin = await prisma.user.create({
     data: {
-      username: 'admin',
-      password: hashedPassword,
+      unaNo: 'CHOICE9881464331',
       name: 'Admin User',
       role: Role.ADMIN,
     },
   });
-  console.log(`Created admin user: ${admin.username}`);
+  console.log(`Created admin user: ${admin.unaNo}`);
 
   // Create employees and payslips for each company
   const currentDate = new Date();
@@ -176,8 +174,7 @@ async function main() {
       // Create user for employee
       const user = await prisma.user.create({
         data: {
-          username: `${firstName.toLowerCase()}.${lastName.toLowerCase()}`,
-          password: await bcrypt.hash('password123', 10),
+          unaNo: faker.string.numeric(12),
           name: fullName,
           role: Role.EMPLOYEE,
           employeeCode: employee.code,
@@ -195,6 +192,8 @@ async function main() {
         // Generate random values for payslip
         const monthlyGross = faker.number.float({ min: 25000, max: 150000, fractionDigits: 2 });
         const daysWorked = faker.number.int({ min: 22, max: 26 });
+        const basic = faker.number.float({ min: 20000, max: 120000, fractionDigits: 2 });
+        const da = faker.number.float({ min: 5000, max: 20000, fractionDigits: 2 });
         const otHours = faker.number.int({ min: 0, max: 20 });
         
         // Calculate gross wages (monthly + OT)
@@ -214,6 +213,8 @@ async function main() {
             month,
             year,
             daysWorked,
+            basic,
+            da,
             otHours,
             monthlyGross,
             grossWages,

@@ -27,8 +27,7 @@ model Contact {
 // User model for authentication
 model User {
   id           Int       @id @default(autoincrement())
-  username     String    @unique
-  password     String
+  unaNo     String    @unique
   name         String
   role         Role      @default(EMPLOYEE)
   employeeCode String?   @unique // Maps to an Employee if applicable
@@ -45,7 +44,7 @@ model Employee {
   code      String    @unique // Employee code for mapping
   name      String
   user      User?     
-  uanNo     String?   // Universal Account Number for PF
+  uanNo     String   // Universal Account Number for PF
   esiNo     String?   // Employee State Insurance Number
   payslips  Payslip[] // Relation to Payslip
   createdAt DateTime  @default(now())
@@ -87,6 +86,8 @@ model Payslip {
   month          Int       // 1-12
   year           Int
   daysWorked     Int     // Days worked in the month
+  basic          Float     // Basic salary
+  da             Float     // Dearness Allowance
   otHours        Int     // OT hours
   monthlyGross   Float     // Monthly gross
   grossWages     Float     // Total gross wages

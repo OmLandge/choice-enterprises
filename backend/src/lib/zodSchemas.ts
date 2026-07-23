@@ -1,8 +1,7 @@
 import { z } from 'zod';
 
 export const loginSchema = z.object({
-    username: z.string(),
-    password: z.string(),
+    unaNo: z.string(),
 });
 
 export const getPayslipSchema = z.object({
@@ -32,11 +31,9 @@ export const employeeSchema = z.object({
     employees: z.array(z.object({
     employeeCode: z.string(),
     esiNo: z.preprocess(val => val === '' ? 'N/A': val, z.string()),
-    uanNo: z.preprocess(val => val === '' ? 'N/A': val, z.string()),
+    uanNo: z.string(),
     fullName: z.string(),
-    password: z.string(),
     role: z.enum(["EMPLOYEE"]),
-    username: z.string(),
 }))});
 
 export const payslipSchema = z.object({
@@ -48,6 +45,8 @@ export const payslipSchema = z.object({
     payslips: z.array(z.object({
         employeeCode: z.string(),
         daysWorked: z.coerce.number(),
+        basic: z.coerce.number(),
+        da: z.coerce.number(),
         otHours: z.coerce.number(),
         monthlyGross: z.coerce.number(),
         grossWages: z.coerce.number(),
@@ -56,7 +55,4 @@ export const payslipSchema = z.object({
     }).catchall(z.coerce.number())),
 });
 
-export const updatePasswordSchema = z.object({
-    previousPassword: z.string(),
-    newPassword: z.string(),
-});
+

@@ -5,8 +5,8 @@ export const checkAuth = (token: string) => {
         return false;
     }
     try {
-        const decoded = verify(token, process.env.JWT_SECRET as string) as { username: string };
-        if(!decoded.username) {
+        const decoded = verify(token, process.env.JWT_SECRET as string) as { unaNo: string };
+        if(!decoded.unaNo) {
             return false;
         }
         return true;

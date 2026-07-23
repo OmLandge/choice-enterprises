@@ -4,7 +4,6 @@ import Admin from "./pages/Admin";
 import Dashboard from "./pages/Dashboard";
 import ContactPage from "./pages/Contact";
 import Contacts from "./pages/Contacts";
-import ChangePassword from "./pages/ChangePassword";
 
 function App() {
   return (
@@ -15,7 +14,6 @@ function App() {
         <Route path="/admin" element={<Admin />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/admin/contacts" element={<Contacts />} />
-        <Route path="/change-password" element={<ChangePassword />} />
       </Routes>
     </BrowserRouter>
   )

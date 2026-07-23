@@ -1,4 +1,4 @@
-import { Key, LogOut } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -7,10 +7,9 @@ interface DashboardLayoutProps {
   children: React.ReactNode
   name: string
   onLogout: () => void
-  changePassword: () => void
 }
 
-export function DashboardLayout({ children, name, onLogout, changePassword }: DashboardLayoutProps) {
+export function DashboardLayout({ children, name, onLogout }: DashboardLayoutProps) {
   const initials = name
     .split(' ')
     .map(n => n[0])
@@ -41,12 +40,6 @@ export function DashboardLayout({ children, name, onLogout, changePassword }: Da
                 </Avatar>
               </TooltipTrigger>
               <TooltipContent>
-                <div>
-                  <Button variant="ghost" size="sm" onClick={changePassword} className="text-gray-500 hover:text-gray-700">
-                    <Key className="h-4 w-4 mr-2" />
-                    Change Pass
-                  </Button>
-                </div>
                 <div>
                   <Button 
                     variant="ghost" 

@@ -208,11 +208,9 @@ adminRouter.post("/employee", async(req, res) => {
             res.status(400).json({ message: 'Employee insertion failed' });
             return;
         }
-        const hashedPassword = await bcrypt.hash(zRes.data.employees[0].password, 10);
         const userRes = await prisma.user.createMany({
             data: zRes.data.employees.map((employee) => ({
-                username: employee.employeeCode,
-                password: hashedPassword,
+                unaNo: employee.employeeCode,
                 name: employee.fullName,
                 role: employee.role,
                 employeeCode: employee.employeeCode,
@@ -262,6 +260,8 @@ adminRouter.post("/payslips", async(req, res) => {
                     year: formData.year,
                     employeeCode: payslip.employeeCode,
                     daysWorked: payslip.daysWorked,
+                    basic: payslip.basic,
+                    da: payslip.da,
                     otHours: payslip.otHours,
                     monthlyGross: payslip.monthlyGross,
                     grossWages: payslip.grossWages,

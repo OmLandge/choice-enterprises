@@ -68,11 +68,6 @@ export default function Dashboard() {
     window.location.reload();
   }
 
-  const handleChangePassword = () => {
-    navigate('/change-password');
-    window.location.reload();
-  }
-
   useEffect(() => {
     getTotalPayslips().then(data => {
         setTotalPayslips(data.count);
@@ -84,7 +79,6 @@ export default function Dashboard() {
     <DashboardLayout 
       name={name} 
       onLogout={handleLogout}
-      changePassword={handleChangePassword}
     >
       <div className="space-y-6">
         <div>

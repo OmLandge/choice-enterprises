@@ -75,3 +75,9 @@
   background-color: #c9c9c9;
   border-radius: 10px;
 }
+@media print {
+  .print-page-break {
+    page-break-before: always;
+    break-before: page;
+  }
+}

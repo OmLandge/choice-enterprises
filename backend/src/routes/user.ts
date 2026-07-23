@@ -15,11 +15,11 @@ userRouter.get('/payslip', async (req, res) => {
         return;
     }
     const decoded = decode(token) as JwtPayload;
-    const userName = decoded.username;
+    const unaNo = decoded.unaNo;
     try{
     const user = await prisma.user.findUnique({
         where: {
-            username: userName,
+            unaNo: unaNo,
         },
     });
     if (!user) {
@@ -90,11 +90,11 @@ userRouter.get("/total-payslips", async (req, res) => {
         return;
     }
     const decoded = decode(token) as JwtPayload;
-    const userName = decoded.username;
+    const unaNo = decoded.unaNo;
     try{
     const user = await prisma.user.findUnique({
         where: {
-            username: userName,
+            unaNo: unaNo,
         },
     });
     if (!user) {

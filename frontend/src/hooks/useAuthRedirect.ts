@@ -25,9 +25,6 @@ export const useAuthRedirect = () => {
         if (!user || !user.role) {
           throw new Error('Invalid user data');
         }
-        if(window.location.pathname === '/change-password') {
-          return true;
-        }
         if(user.role === 'ADMIN' && window.location.pathname !== '/admin') {
           navigate('/admin');
           window.location.reload();

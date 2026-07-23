@@ -11,6 +11,15 @@ import { AdminPayslip } from '@/components/admin-payslip'
 import axios from 'axios'
 import { BACKEND_URL } from '@/config'
 import UploadData from '@/components/upload-data'
+import { DocumentPicker } from '@/components/document-picker'
+import { AccidentBook } from '@/components/accident-book'
+import { AdvanceRegister } from '@/components/advance-register'
+import { DamageRegister } from '@/components/damage-register'
+import { FinesRegister } from '@/components/fines-register'
+import { HouseRentRegister } from '@/components/house-rent-register'
+import { LeaveRegister } from '@/components/leave-register'
+import { MaternityRegister } from '@/components/maternity-register'
+import { OvertimeRegister } from '@/components/overtime-register'
 
 const getCompanies = async () => {
   const response = await axios.get(`${BACKEND_URL}/api/admin/companies`,{
@@ -51,6 +60,18 @@ const getTotalContacts = async () => {
   }
 }
 
+export enum DocumentType {
+  PAYSLIP = "Payslip",
+  ACCIDENT_BOOK = "Accident Book",
+  ADVANCE_REGISTER = "Advance Register",
+  DAMAGE_REGISTER = "Damage Register",
+  FINES_REGISTER = "Fines Register",
+  OVERTIME_REGISTER = "Overtime Register",
+  LEAVE_REGISTER = "Leave Register",
+  HOUSE_RENT_REGISTER = "House Rent Register",
+  MATERNITY_REGISTER = "Maternity Register",
+}
+
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
@@ -61,6 +82,7 @@ export default function AdminDashboard() {
   const [contacts, setContacts] = useState(0);
   const [totalPayslips, setTotalPayslips] = useState<number>(0);
   const [totalEmployees, setTotalEmployees] = useState<number>(0);
+  const [docType, setDocType] = useState<string>('');
   
   useAuthRedirect();
 
@@ -98,9 +120,8 @@ export default function AdminDashboard() {
     setCompany(company)
   }
 
-  const handleChangePassword = () => {
-    navigate('/change-password');
-    window.location.reload();
+  const handleDocTypeSelect = (docType: string) => {
+    setDocType(docType);
   }
 
   const handleLogout = () => {
@@ -115,7 +136,6 @@ export default function AdminDashboard() {
     <DashboardLayout 
       name={name}
       onLogout={handleLogout}
-      changePassword={handleChangePassword}
     >
       <div className="space-y-6">
         <div>
@@ -190,18 +210,70 @@ export default function AdminDashboard() {
                 <Printer className="h-4 w-4" />
                 {totalPayslips > 0 ? totalPayslips : ""}
               </Button>
+
+              <DocumentPicker onSelect={handleDocTypeSelect} />
               <CompanyPicker companies={companies} onSelect={handleCompanySelect} />
               <MonthYearPicker onSelect={handleDateSelect} />
             </div>
           </div>
-          <div className='max-h-[950px] custom-scroll overflow-y-auto bg-white border rounded-lg max-w-3xl mx-auto overflow-auto shadow-sm'>
-            <AdminPayslip
-              month={selectedMonth}
-              year={selectedYear}
-              company={company}
-              onPrint={(handler) => setPrintHandler(() => handler)}
-              setTotalPayslips={(total) => setTotalPayslips(total)}
-            />
+          <div className={'custom-scroll overflow-y-auto bg-white border rounded-lg w-full mx-auto overflow-auto shadow-sm' + (docType === DocumentType.PAYSLIP ? ' max-h-[950px]' : ' max-h-[600px]')}>
+            {docType === DocumentType.PAYSLIP && (
+              <AdminPayslip
+                month={selectedMonth}
+                year={selectedYear}
+                company={company}
+                onPrint={(handler) => setPrintHandler(() => handler)}
+                setTotalPayslips={(total) => setTotalPayslips(total)}
+              />
+            )}
+            {docType === DocumentType.ACCIDENT_BOOK && (
+              <AccidentBook
+                month={selectedMonth}
+                year={selectedYear}
+                onPrint={(handler) => setPrintHandler(() => handler)}
+               />
+            )}
+            {docType === DocumentType.ADVANCE_REGISTER && (
+              <AdvanceRegister
+                onPrint={(handler) => setPrintHandler(() => handler)}
+              />
+            )}
+            {docType === DocumentType.DAMAGE_REGISTER && (
+              <DamageRegister
+                month={selectedMonth}
+                year={selectedYear}
+                onPrint={(handler) => setPrintHandler(() => handler)}
+              />
+            )}
+            {docType === DocumentType.FINES_REGISTER && (
+              <FinesRegister
+                month={selectedMonth}
+                year={selectedYear}
+                onPrint={(handler) => setPrintHandler(() => handler)}
+              />
+            )}
+            {docType === DocumentType.HOUSE_RENT_REGISTER && (
+              <HouseRentRegister
+                onPrint={(handler) => setPrintHandler(() => handler)}
+              />
+            )}
+            {docType === DocumentType.LEAVE_REGISTER && (
+              <LeaveRegister
+                onPrint={(handler) => setPrintHandler(() => handler)}
+              />
+            )}
+            {docType === DocumentType.MATERNITY_REGISTER && (
+              <MaternityRegister
+                month={selectedMonth}
+                year={selectedYear}
+                onPrint={(handler) => setPrintHandler(() => handler)}
+              />
+            )}
+            {docType === DocumentType.OVERTIME_REGISTER && (
+              <OvertimeRegister
+                onPrint={(handler) => setPrintHandler(() => handler)}
+              />
+            )}
           </div>
         </div>
       </div>
