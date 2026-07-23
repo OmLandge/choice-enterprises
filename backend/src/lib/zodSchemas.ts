@@ -33,6 +33,8 @@ export const employeeSchema = z.object({
     esiNo: z.preprocess(val => val === '' ? 'N/A': val, z.string()),
     uanNo: z.string(),
     fullName: z.string(),
+    fatherName: z.string(),
+    sex: z.string(),
     role: z.enum(["EMPLOYEE"]),
 }))});
 
@@ -47,11 +49,16 @@ export const payslipSchema = z.object({
         daysWorked: z.coerce.number(),
         basic: z.coerce.number(),
         da: z.coerce.number(),
+        basic_da: z.coerce.number(),
         otHours: z.coerce.number(),
         monthlyGross: z.coerce.number(),
         grossWages: z.coerce.number(),
         totalDeduction: z.coerce.number(),
         netWages: z.coerce.number(),
+        designation: z.string(),
+        dateOfAdvance: z.string().optional(),
+        perDayRate: z.coerce.number(),
+        perHourRate: z.coerce.number(),
     }).catchall(z.coerce.number())),
 });
 

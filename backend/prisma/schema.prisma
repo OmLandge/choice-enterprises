@@ -43,6 +43,8 @@ model Employee {
   id        Int       @id @default(autoincrement())
   code      String    @unique // Employee code for mapping
   name      String
+  fatherName String
+  sex       String
   user      User?     
   uanNo     String   // Universal Account Number for PF
   esiNo     String?   // Employee State Insurance Number
@@ -86,13 +88,18 @@ model Payslip {
   month          Int       // 1-12
   year           Int
   daysWorked     Int     // Days worked in the month
-  basic          Float     // Basic salary
-  da             Float     // Dearness Allowance
+  basic_da             Float     // Basic + da
   otHours        Int     // OT hours
   monthlyGross   Float     // Monthly gross
   grossWages     Float     // Total gross wages
   totalDeduction Float     // Total deductions
   netWages       Float     // Net wages after deductions
+  designation String
+  dateOfAdvance String?
+  basic     Float
+  da        Float
+  perDayRate Float
+  perHourRate Float
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 

@@ -1160,64 +1160,64 @@ export const LeaveRegister = ({
                   {employee.my}
                 </td>
 
-                <td className="border border-black p-1 text-center">
-                  {employee.d}
+                <td className="border border-black p-1 text-center"> {/*total paid days*/}
+                  {employee.d}                      
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.l}
+                  0
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.m}
+                  0
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.w}
+                  0
                 </td>
 
-                <td className="border border-black p-1 text-center">
+                <td className="border border-black p-1 text-center"> {/*total paid days*/}
                   {employee.t}
                 </td>
 
-                <td className="border border-black p-1 text-center">
+                <td className="border border-black p-1 text-center">{/*total paid days / 20 */}
                   {employee.b}
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.lw}
+                  0
                 </td>
 
-                <td className="border border-black p-1 text-center">
+                <td className="border border-black p-1 text-center"> {/*total paid days / 20 */}
                   {employee.te}
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.r}
+                  0
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.dy}
+                  0
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.f}
+                  -
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.to}
+                  -
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.bc}
+                  Monthly Paid
                 </td>
                 <td className="border border-black p-1 text-center">
                   {employee.nr}
                 </td>
                 <td className="border border-black p-1 text-center">
-                  {employee.cr}
+                  -
                 </td>
-                <td className="border border-black p-1 text-center">
+                <td className="border border-black p-1 text-center"> {/*{employee.nr} * (total paid days / 20) */}
                   {employee.rw}
                 </td>
               </tr>

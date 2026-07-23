@@ -167,6 +167,8 @@ async function main() {
           name: fullName,
           uanNo: faker.string.numeric(12),
           esiNo: faker.string.numeric(17),
+          fatherName: faker.person.fullName(),
+          sex: faker.helpers.arrayElement(["M", "F"])
         },
       });
       console.log(`Created employee: ${employee.name} (${employee.code})`);
@@ -195,6 +197,11 @@ async function main() {
         const basic = faker.number.float({ min: 20000, max: 120000, fractionDigits: 2 });
         const da = faker.number.float({ min: 5000, max: 20000, fractionDigits: 2 });
         const otHours = faker.number.int({ min: 0, max: 20 });
+        const basic_da = faker.number.float({min: 20000, max: 120000, fractionDigits: 2});
+        const designation = faker.helpers.arrayElement(["Skilled", "Unskilled"]);
+        const dateOfAdvance = faker.date.anytime().toISOString().split('T')[0];
+        const perDayRate = faker.number.float({min: 20000, max: 120000, fractionDigits: 2});
+        const perHourRate = faker.number.float({min: 20000, max: 120000, fractionDigits: 2});
         
         // Calculate gross wages (monthly + OT)
         const hourlyRate = monthlyGross / (22 * 8); // Assuming 22 working days, 8 hours per day
@@ -220,6 +227,11 @@ async function main() {
             grossWages,
             totalDeduction,
             netWages,
+            basic_da,
+            designation,
+            dateOfAdvance,
+            perDayRate,
+            perHourRate
           },
         });
 

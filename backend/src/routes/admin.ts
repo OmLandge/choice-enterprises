@@ -202,6 +202,8 @@ adminRouter.post("/employee", async(req, res) => {
                 name: employee.fullName,
                 uanNo: employee.uanNo,
                 esiNo: employee.esiNo,
+                fatherName: employee.fatherName,
+                sex: employee.sex,
             })),
         });
         if(!employeeRes) {
@@ -210,7 +212,7 @@ adminRouter.post("/employee", async(req, res) => {
         }
         const userRes = await prisma.user.createMany({
             data: zRes.data.employees.map((employee) => ({
-                unaNo: employee.employeeCode,
+                unaNo: employee.uanNo,
                 name: employee.fullName,
                 role: employee.role,
                 employeeCode: employee.employeeCode,
@@ -249,7 +251,14 @@ adminRouter.post("/payslips", async(req, res) => {
         "monthlyGross",
         "grossWages",
         "totalDeduction",
-        "netWages"
+        "netWages",
+        "designation",
+        "dateOfAdvance",
+        "perDayRate",
+        "perHourRate",
+        "basic",
+        "da",
+        "basic_da"
       ];
     try {
         for(const payslip of payslips) {
@@ -262,11 +271,16 @@ adminRouter.post("/payslips", async(req, res) => {
                     daysWorked: payslip.daysWorked,
                     basic: payslip.basic,
                     da: payslip.da,
+                    basic_da: payslip.basic_da,
                     otHours: payslip.otHours,
                     monthlyGross: payslip.monthlyGross,
                     grossWages: payslip.grossWages,
                     totalDeduction: payslip.totalDeduction,
                     netWages: payslip.netWages,
+                    designation: payslip.designation,
+                    dateOfAdvance: payslip.dateOfAdvance,
+                    perDayRate: payslip.perDayRate,
+                    perHourRate: payslip.perHourRate,
                 }
             })
             if(!payslipRes) {

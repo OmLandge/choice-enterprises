@@ -978,47 +978,47 @@ export const OvertimeRegister = ({
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.d}
+                  0
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.w}
+                  0
                 </td>
 
-                <td className="border border-black p-1 text-center">
+                <td className="border border-black p-1 text-center">{/* Total over time */}
                   {employee.t}
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.h}
+                  0
                 </td>
 
-                <td className="border border-black p-1 text-center">
+                <td className="border border-black p-1 text-center">{/* Per day rate */} 
                   {employee.nr}
                 </td>
 
-                <td className="border border-black p-1 text-center">
+                <td className="border border-black p-1 text-center">{/* per hour rate */}
                   {employee.or}
                 </td>
 
-                <td className="border border-black p-1 text-center">
+                <td className="border border-black p-1 text-center">{/* Total over time * per hour rate */}
                   {employee.ne}
                 </td>
 
-                <td className="border border-black p-1 text-center">
+                <td className="border border-black p-1 text-center">{/* Total over time * per hour rate */}
                   {employee.te}
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.x}
+                  
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.y}
+                  
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.z}
+                  
                 </td>
               </tr>
             ))}
