@@ -1,4 +1,4 @@
-"employeeCode,""daysWorked"",""otHours"",""monthlyGross"",""grossWages"",""totalDeduction"",""netWages"",""Uniform Washing"",""Basic+D.A."""
+"employeeCode,""daysWorked"",""otHours"",""gross"",""grossWages"",""totalDeduction"",""netWages"",""Uniform Washing"",""Basic+D.A."""
 "E001,22,10,5000,5200,200,5000,50,100"
 "E002,20,8,4800,5000,150,4850,30,80"
 "E003,23,12,5100,5400,180,5220,60,90"

@@ -1,12 +1,42 @@
-import { useEffect, useRef } from "react";
+import { BACKEND_URL } from "@/config";
+import axios from "axios";
+import { useEffect, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 
-export const AccidentBook = ({ month, year, onPrint }: { month: number; year: number; onPrint?: (handler: () => void) => void; }) => {
-      const bookRef = useRef<HTMLDivElement>(null)
+interface CompanyDetailsInterface {
+  name: string;
+  address: string;
+  location: string;
+}
+
+const getCompanyDetails = async (company: string) => {
+  const response = await axios.get(`${BACKEND_URL}/api/admin/companyDetails?companyCode=${company}`,{
+    headers: {
+      Authorization: `${localStorage.getItem('token')}`
+    }
+  });
+  if(response.status === 200) {
+    return response.data;
+  }else {
+    return [];
+  }
+}
+
+export const AccidentBook = ({ company, month, year, onPrint }: { company: string; month: number; year: number; onPrint?: (handler: () => void) => void; }) => {
+      const bookRef = useRef<HTMLDivElement>(null);
+      const [companyDetails, setCompanyDetails] = useState<CompanyDetailsInterface>();
     
     const handlePrint = useReactToPrint({
         contentRef: bookRef,
       })
+
+      useEffect(() => {
+        getCompanyDetails(company).then(data => {
+          setCompanyDetails(data);
+      }).catch(error => {
+        console.log(error);
+      });
+      }, [company])
 
       useEffect(() => {
           if (onPrint) {
@@ -63,8 +93,8 @@ export const AccidentBook = ({ month, year, onPrint }: { month: number; year: nu
                     </td>
 
                     <td className="text-center font-bold">
-                      <p>CIE AUTOMOTIVE INDIA LTD - GEARS DIVISION</p>
-                      <p>TAL. KHED, VARALE DIST. PUNE</p>
+                      <p>{companyDetails?.name}</p>
+                      <p>{companyDetails?.address}</p>
                     </td>
                   </tr>
                 </tbody>

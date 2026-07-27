@@ -1,16 +1,48 @@
-import { useEffect, useRef } from "react";
+import { BACKEND_URL } from "@/config";
+import axios from "axios";
+import { useEffect, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
+
+interface CompanyDetailsInterface {
+  name: string;
+  address: string;
+  location: string;
+}
+
+const getCompanyDetails = async (company: string) => {
+  const response = await axios.get(`${BACKEND_URL}/api/admin/companyDetails?companyCode=${company}`,{
+    headers: {
+      Authorization: `${localStorage.getItem('token')}`
+    }
+  });
+  if(response.status === 200) {
+    return response.data;
+  }else {
+    return [];
+  }
+}
 
 export const MaternityRegister = ({
   onPrint,
+  company,
   month,
   year
 }: {
   onPrint: (handler: () => void) => void;
+  company: string;
   month: number;
   year: number;
 }) => {
   const bookRef = useRef<HTMLDivElement>(null);
+  const [companyDetails, setCompanyDetails] = useState<CompanyDetailsInterface>();
+    
+  useEffect(() => {
+    getCompanyDetails(company).then(data => {
+      setCompanyDetails(data);
+  }).catch(error => {
+    console.log(error);
+  });
+  }, [company])
 
   const handlePrint = useReactToPrint({
     contentRef: bookRef,
@@ -68,14 +100,14 @@ export const MaternityRegister = ({
               <span className="font-semibold">
                 NAME OF FACTORY :
               </span>{" "}
-              <span className="font-bold">Sany Wind Energy India Private Limited</span>
+              <span className="font-bold">{companyDetails?.name}</span>
 
             </td>
             <td
               colSpan={10}
               className="border border-black p-2 align-top font-bold"
             >
-              Building no. 08, Plot no. E-4, Chakan MIDC, Phase III, Chakan, Pune - 410501
+              {companyDetails?.address}
             </td>
         </tr>
         <tr>

@@ -1,925 +1,89 @@
-import { useEffect, useMemo, useRef } from "react";
+import { BACKEND_URL } from "@/config";
+import axios from "axios";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 
 const ROWS_PER_PAGE = 12;
 
+const getOvertimeRegister = async (company: string, month: number, year: number) => {
+  const response = await axios.get(`${BACKEND_URL}/api/admin/overtimeRegister?companyCode=${company}&month=${month}&year=${year}`,{
+    headers: {
+      Authorization: `${localStorage.getItem('token')}`
+    }
+  });
+  if(response.status === 200) {
+    return response.data;
+  }else {
+    return [];
+  }
+}
+
+interface OvertimeRegisterInterface {
+  employee: {
+    name: string;
+    fatherName: string;
+    sex: string;
+  }
+  company: {
+    name: string;
+    address: string;
+  }
+  designation: string;
+  otHours: number;
+  perDayRate: number;
+  perHourRate: number;
+}
+
 export const OvertimeRegister = ({
+  company,
+  month,
+  year,
   onPrint,
 }: {
+  company: string;
+  month: number;
+  year: number;
   onPrint: (handler: () => void) => void;
 }) => {
   const bookRef = useRef<HTMLDivElement>(null);
+  const [data, setData] = useState<OvertimeRegisterInterface[]>([]);
+  const [isData, setIsData] = useState<boolean>(false);
 
   const handlePrint = useReactToPrint({
     contentRef: bookRef,
   });
 
   useEffect(() => {
+      getOvertimeRegister(company, month, year).then(data => {
+          if(data.length === 0) {
+              setIsData(false);
+              setData([]);
+              return;
+          }
+          setData(data);
+          setIsData(true);
+      }).catch(error => {
+        console.log(error);
+        setIsData(false);
+        setData([]);
+      });
+    }, [company, month, year])
+
+  useEffect(() => {
     onPrint?.(handlePrint);
   }, [handlePrint, onPrint]);
-
-  // ===================== Dummy Data =====================
-
-  const employees = [
-    {
-      name: "Ramesh Shanker Gajanan Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-    {
-      name: "Ramesh Patil",
-      father: "Shankar Patil",
-      sex: "Male",
-      desg: "Skilled",
-      d: "0",
-      w: "0",
-      t: "6.5",
-      h: "0",
-      nr: "765.73",
-      or: "191.53",
-      ne: "1244",
-      te: "1244",
-      x: "",
-      y: "",
-      z: "",
-    },
-
-    // Keep all your remaining employee objects here...
-  ];
 
   // ===================== Split into pages =====================
 
   const pages = useMemo(() => {
-    const chunks: typeof employees[] = [];
+    const chunks: typeof data[] = [];
 
-    for (let i = 0; i < employees.length; i += ROWS_PER_PAGE) {
-      chunks.push(employees.slice(i, i + ROWS_PER_PAGE));
+    for (let i = 0; i < data.length; i += ROWS_PER_PAGE) {
+      chunks.push(data.slice(i, i + ROWS_PER_PAGE));
     }
 
     return chunks;
-  }, [employees]);
+  }, [data]);
 
   return (
     <div ref={bookRef} className="bg-white">
@@ -950,9 +114,9 @@ export const OvertimeRegister = ({
           </colgroup>
 
           <tbody>
-            <TableHeader />
+            <TableHeader name={data[0].company.name} address={data[0].company.address} />
 
-            {pageEmployees.map((employee, index) => (
+            {pageEmployees.map((data, index) => (
               <tr
                 key={pageIndex * ROWS_PER_PAGE + index}
                 className="text-[10px]"
@@ -962,19 +126,19 @@ export const OvertimeRegister = ({
                 </td>
 
                 <td className="border border-black p-1 break-words">
-                  {employee.name}
+                  {data.employee.name}
                 </td>
 
                 <td className="border border-black p-1 break-words">
-                  {employee.father}
+                  {data.employee.fatherName}
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.sex}
+                  {data.employee.sex}
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.desg}
+                  {data.designation}
                 </td>
 
                 <td className="border border-black p-1 text-center">
@@ -986,7 +150,7 @@ export const OvertimeRegister = ({
                 </td>
 
                 <td className="border border-black p-1 text-center">{/* Total over time */}
-                  {employee.t}
+                  {data.otHours}
                 </td>
 
                 <td className="border border-black p-1 text-center">
@@ -994,19 +158,19 @@ export const OvertimeRegister = ({
                 </td>
 
                 <td className="border border-black p-1 text-center">{/* Per day rate */} 
-                  {employee.nr}
+                  {data.perDayRate}
                 </td>
 
                 <td className="border border-black p-1 text-center">{/* per hour rate */}
-                  {employee.or}
+                  {data.perHourRate}
                 </td>
 
                 <td className="border border-black p-1 text-center">{/* Total over time * per hour rate */}
-                  {employee.ne}
+                  {data.otHours * data.perHourRate}
                 </td>
 
                 <td className="border border-black p-1 text-center">{/* Total over time * per hour rate */}
-                  {employee.te}
+                  {data.otHours * data.perHourRate}
                 </td>
 
                 <td className="border border-black p-1 text-center">
@@ -1031,7 +195,7 @@ export const OvertimeRegister = ({
   );
 };
 
-function TableHeader() {
+function TableHeader({name, address}: {name: string, address: string}) {
     return (
     <>
     {/* ===================== Heading ===================== */}
@@ -1091,7 +255,7 @@ function TableHeader() {
                     </p>
 
                     <p className="mt-1 font-bold text-center">
-                        CIE AUTOMOTIVE INDIA LTD. (GEARS DIVISION PUNE)
+                        {name}
                     </p>
               </div>
             </td>
@@ -1115,7 +279,7 @@ function TableHeader() {
               <span className="font-semibold">
                 Name & Address of principle employer :
               </span>{" "}
-              <span className="font-bold">Plot No. C23/2, Phase-II, MIDC, Varale, Tal. Khed, Dist. Pune - 410501</span>
+              <span className="font-bold">{address}</span>
             </td>
           </tr>
 

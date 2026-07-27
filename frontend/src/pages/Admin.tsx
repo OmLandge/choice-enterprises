@@ -228,6 +228,7 @@ export default function AdminDashboard() {
             )}
             {docType === DocumentType.ACCIDENT_BOOK && (
               <AccidentBook
+                company={company}
                 month={selectedMonth}
                 year={selectedYear}
                 onPrint={(handler) => setPrintHandler(() => handler)}
@@ -235,11 +236,15 @@ export default function AdminDashboard() {
             )}
             {docType === DocumentType.ADVANCE_REGISTER && (
               <AdvanceRegister
+                company={company}
+                month={selectedMonth}
+                year={selectedYear}
                 onPrint={(handler) => setPrintHandler(() => handler)}
               />
             )}
             {docType === DocumentType.DAMAGE_REGISTER && (
               <DamageRegister
+                company={company}
                 month={selectedMonth}
                 year={selectedYear}
                 onPrint={(handler) => setPrintHandler(() => handler)}
@@ -247,6 +252,7 @@ export default function AdminDashboard() {
             )}
             {docType === DocumentType.FINES_REGISTER && (
               <FinesRegister
+                company={company}
                 month={selectedMonth}
                 year={selectedYear}
                 onPrint={(handler) => setPrintHandler(() => handler)}
@@ -254,16 +260,23 @@ export default function AdminDashboard() {
             )}
             {docType === DocumentType.HOUSE_RENT_REGISTER && (
               <HouseRentRegister
+                company={company}
+                month={selectedMonth}
+                year={selectedYear}
                 onPrint={(handler) => setPrintHandler(() => handler)}
               />
             )}
             {docType === DocumentType.LEAVE_REGISTER && (
               <LeaveRegister
+                company={company}
+                month={selectedMonth}
+                year={selectedYear}
                 onPrint={(handler) => setPrintHandler(() => handler)}
               />
             )}
             {docType === DocumentType.MATERNITY_REGISTER && (
               <MaternityRegister
+                company={company}
                 month={selectedMonth}
                 year={selectedYear}
                 onPrint={(handler) => setPrintHandler(() => handler)}
@@ -271,6 +284,9 @@ export default function AdminDashboard() {
             )}
             {docType === DocumentType.OVERTIME_REGISTER && (
               <OvertimeRegister
+                company={company}
+                month={selectedMonth}
+                year={selectedYear}
                 onPrint={(handler) => setPrintHandler(() => handler)}
               />
             )}

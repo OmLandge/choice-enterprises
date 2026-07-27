@@ -1,16 +1,73 @@
-import { useEffect, useRef } from "react";
+import { BACKEND_URL } from "@/config";
+import axios from "axios";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 
+const ROWS_PER_PAGE = 12;
+
+const getAdvanceRegister = async (company: string, month: number, year: number) => {
+  const response = await axios.get(`${BACKEND_URL}/api/admin/advanceRegister?companyCode=${company}&month=${month}&year=${year}`,{
+    headers: {
+      Authorization: `${localStorage.getItem('token')}`
+    }
+  });
+  if(response.status === 200) {
+    return response.data;
+  }else {
+    return [];
+  }
+}
+
+interface AdvanceRegisterInterface {
+  employee: {
+    name: string;
+    fatherName: string;
+  }
+  fieldValues: {
+    value: number;
+  }[]
+  company: {
+    name: string;
+    address: string;
+  }
+  designation: string;
+  dateOfAdvance: string;
+}
+
 export const AdvanceRegister = ({
+  company,
+  month, 
+  year,
   onPrint,
 }: {
+  company: string;
+  month: number;
+  year: number;
   onPrint: (handler: () => void) => void;
 }) => {
   const bookRef = useRef<HTMLDivElement>(null);
+  const [data, setData] = useState<AdvanceRegisterInterface[]>([]);
+  const [isData, setIsData] = useState<boolean>(false);
 
   const handlePrint = useReactToPrint({
     contentRef: bookRef,
   });
+
+  useEffect(() => {
+    getAdvanceRegister(company, month, year).then(data => {
+        if(data.length === 0) {
+            setIsData(false);
+            setData([]);
+            return;
+        }
+        setData(data);
+        setIsData(true);
+    }).catch(error => {
+      console.log(error);
+      setIsData(false);
+      setData([]);
+    });
+  }, [company, month, year])
 
   useEffect(() => {
     if (onPrint) {
@@ -18,11 +75,24 @@ export const AdvanceRegister = ({
     }
   }, [handlePrint, onPrint]);
 
+  const pages = useMemo(() => {
+  const chunks: typeof data[] = [];
+
+  for (let i = 0; i < data.length; i += ROWS_PER_PAGE) {
+    chunks.push(data.slice(i, i + ROWS_PER_PAGE));
+  }
+
+  return chunks;
+}, [data]);
+
   return (
-    <div
-      ref={bookRef}
-      className="bg-white p-8 min-h-[600px]"
-    >
+  <div ref={bookRef} className="bg-white">
+    {pages.map((pageEmployees, pageIndex) => (
+      <div
+        key={pageIndex}
+        className={pageIndex !== 0 ? "print-page-break" : ""}
+      >
+        <div className="p-8 min-h-[600px]">
       <table className="w-full table-fixed border-collapse border-2 border-black text-[10px]">
         <tbody>
           {/* ===================== Heading ===================== */}
@@ -82,7 +152,7 @@ export const AdvanceRegister = ({
                     </p>
 
                     <p className="mt-1 font-bold text-center">
-                        CIE AUTOMOTIVE INDIA LTD. (GEARS DIVISION PUNE)
+                        {data[0].company.name}
                     </p>
               </div>
             </td>
@@ -106,7 +176,7 @@ export const AdvanceRegister = ({
               <span className="font-semibold">
                 Name & Address of principle employer :
               </span>{" "}
-              <span className="font-bold">Plot No. C23/2, Phase-II, MIDC, Varale, Tal. Khed, Dist. Pune - 410501</span>
+              <span className="font-bold">{data[0].company.address}</span>
             </td>
           </tr>
 
@@ -115,7 +185,7 @@ export const AdvanceRegister = ({
               colSpan={11}
               className="border border-black py-2 text-center text-md font-bold"
             >
-              FOR THE MONTH OF JUNE - 2026
+              FOR THE MONTH OF {new Date(year, month - 1).toLocaleString("default", {month: "long"}).toUpperCase()} {year}
             </td>
           </tr>
 
@@ -157,111 +227,50 @@ export const AdvanceRegister = ({
 
           {/* ===================== Dummy Data ===================== */}
 
-          {[
-            {
-              name: "Ramesh Patil",
-              father: "Shankar Patil",
-              job: "Helper",
-              earning: "18,500",
-              advance: "05/06/2026 - 3,000",
-              purpose: "Medical",
-              installment: "3",
-              amount: "1,000",
-              repaid: "31/08/2026",
-              sign: "Ramesh",
-            },
-            {
-              name: "Suresh Pawar",
-              father: "Balu Pawar",
-              job: "Machine Operator",
-              earning: "21,000",
-              advance: "09/06/2026 - 5,000",
-              purpose: "Festival",
-              installment: "5",
-              amount: "1,000",
-              repaid: "31/10/2026",
-              sign: "Suresh",
-            },
-            {
-              name: "Mahesh Jadhav",
-              father: "Ganesh Jadhav",
-              job: "Welder",
-              earning: "22,800",
-              advance: "14/06/2026 - 4,000",
-              purpose: "Personal",
-              installment: "4",
-              amount: "1,000",
-              repaid: "30/09/2026",
-              sign: "Mahesh",
-            },
-            {
-              name: "Sunil Shinde",
-              father: "Tukaram Shinde",
-              job: "Fitter",
-              earning: "20,300",
-              advance: "18/06/2026 - 2,500",
-              purpose: "Emergency",
-              installment: "5",
-              amount: "500",
-              repaid: "31/10/2026",
-              sign: "Sunil",
-            },
-            {
-              name: "Ajay More",
-              father: "Vijay More",
-              job: "Helper",
-              earning: "18,200",
-              advance: "24/06/2026 - 3,500",
-              purpose: "Medical",
-              installment: "7",
-              amount: "500",
-              repaid: "31/12/2026",
-              sign: "Ajay",
-            },
-          ].map((employee, index) => (
+          {pageEmployees.map((data, index) => (
             <tr key={index} className="text-[9px]">
               <td className="border border-black p-1 text-center">
-                {index + 1}
+                {pageIndex * ROWS_PER_PAGE + index + 1}
               </td>
 
               <td className="border border-black p-1">
-                {employee.name}
+                {data.employee.name}
               </td>
 
               <td className="border border-black p-1">
-                {employee.father}
+                {data.employee.fatherName}
               </td>
 
               <td className="border border-black p-1">
-                {employee.job}
+                {data.designation}
               </td>
 
               <td className="border border-black p-1 text-center">
-                {employee.earning}
+                {new Date(year, month - 1).toLocaleString("default", {month: "short"}).toUpperCase()}-{year}
               </td>
 
               <td className="border border-black p-1 text-center">
-                {employee.advance}
+                {data.fieldValues[0].value}
               </td>
 
               <td className="border border-black p-1">
-                {employee.purpose}
+                PERSONAL REASON
               </td>
 
               <td className="border border-black p-1 text-center">
-                {employee.installment}
+                1
               </td>
 
               <td className="border border-black p-1 text-center">
-                {employee.amount}
+                
               </td>
 
               <td className="border border-black p-1 text-center">
-                {employee.repaid}
+                {data.dateOfAdvance}
               </td>
 
               <td className="border border-black p-1 text-center">
-                {employee.sign}
+                
               </td>
             </tr>
           ))}
@@ -271,23 +280,28 @@ export const AdvanceRegister = ({
 
           
 
-          <tr>
-            <td
-              colSpan={11}
-              className="border border-black p-3"
-            >
-              <div className="flex justify-end">
-                <div className="text-center">
-                  <div className="h-12"></div>
-                  <p className="font-semibold text-[10px]">
-                    Signature of Contractor
-                  </p>
-                </div>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+          {pageIndex === pages.length - 1 && (
+  <tr>
+    <td
+      colSpan={11}
+      className="border border-black p-3"
+    >
+      <div className="flex justify-end">
+        <div className="text-center">
+          <div className="h-12"></div>
+          <p className="font-semibold text-[10px]">
+            Signature of Contractor
+          </p>
+        </div>
+      </div>
+    </td>
+  </tr>
+)}
+</tbody>
+        </table>
+      </div>
     </div>
-  );
+    ))}
+  </div>
+);
 };

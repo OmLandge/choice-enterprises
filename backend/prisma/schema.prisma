@@ -58,6 +58,8 @@ model Company {
   id            Int                   @id @default(autoincrement())
   code          String                @unique // Company code for mapping
   name          String
+  address       String?
+  location      String?
   payslips      Payslip[]             // Relation to Payslip
   payslipFields CompanyPayslipField[] // Relation to Custom Payslip Fields
   createdAt     DateTime              @default(now())
@@ -88,9 +90,8 @@ model Payslip {
   month          Int       // 1-12
   year           Int
   daysWorked     Int     // Days worked in the month
-  basic_da             Float     // Basic + da
   otHours        Int     // OT hours
-  monthlyGross   Float     // Monthly gross
+  gross   Float     // Monthly gross
   grossWages     Float     // Total gross wages
   totalDeduction Float     // Total deductions
   netWages       Float     // Net wages after deductions

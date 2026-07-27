@@ -12,7 +12,7 @@ export interface PayslipProps {
       name: string
       uan: string
       esiNo: string
-      monthlyGross: number
+      gross: number
       presentDays: number
       otHours: number
     }

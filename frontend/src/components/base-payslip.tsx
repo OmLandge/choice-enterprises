@@ -12,8 +12,7 @@ export const BasePayslip = ( {payslip }: {payslip: any} ) => {
           className="w-[150px] mb-4"
         />
         <p className="text-sm text-gray-600 px-2 border-b pb-6">
-          Sai Dham Commercial Mall, Office No. 16, 17 & 18, 1st floor, Landewadi,<br />
-          Bhosari, Pune - 411039
+          Sai Dham Commercial Mall, Office No. 16, 17 & 18, 1st floor, Landewadi, Bhosari, Pune - 411039
         </p>
       </div>
 
@@ -32,8 +31,8 @@ export const BasePayslip = ( {payslip }: {payslip: any} ) => {
             <span>{payslip.employee?.esiNo}</span>
           </div>
           <div>
-            <span className="font-semibold">MONTHLY GROSS: </span>
-            <span>{payslip?.monthlyGross}</span>
+            <span className="font-semibold">GROSS: </span>
+            <span>{payslip?.gross}</span>
           </div>
           <div>
             <span className="font-semibold">P. DAYS: </span>
@@ -64,13 +63,13 @@ export const BasePayslip = ( {payslip }: {payslip: any} ) => {
         <tbody className="text-sm">
             <tr>
               <td className="border p-2">
-                <span>{earnings[0]?.field.name}</span>
+                <span>{earnings[0]?.field.name.split("_").join(" ").toUpperCase()}</span>
               </td>
               <td className="border p-2 text-right">
                 <span>{earnings[0]?.value && earnings[0]?.value.toFixed(2)}</span>
               </td>
               <td className="border p-2">
-                <span>{deductions[0]?.field.name}</span>
+                <span>{deductions[0]?.field.name.split("_").join(" ").toUpperCase()}</span>
               </td>
               <td className="border p-2 text-right">
                 <span>{deductions[0]?.value && deductions[0]?.value.toFixed(2)}</span>
@@ -80,13 +79,13 @@ export const BasePayslip = ( {payslip }: {payslip: any} ) => {
           {[...Array(totalRows)].map((_, index) => ( index < totalRows-1 &&
             <tr key={index}>
               <td className="border p-2">
-                <span>{earnings[index+1]?.field.name}</span>
+                <span>{earnings[index+1]?.field.name.split("_").join(" ").toUpperCase()}</span>
               </td>
               <td className="border p-2 text-right">
                 <span>{earnings[index+1]?.value && earnings[index+1]?.value.toFixed(2)}</span>
               </td>
               <td className="border p-2">
-                <span>{deductions[index+1]?.field.name}</span>
+                <span>{deductions[index+1]?.field.name.split("_").join(" ").toUpperCase()}</span>
               </td>
               <td className="border p-2 text-right">
                 <span>{deductions[index+1]?.value && deductions[index+1]?.value.toFixed(2)}</span>
@@ -95,19 +94,19 @@ export const BasePayslip = ( {payslip }: {payslip: any} ) => {
           ))}
           <tr>
               <td className="border p-2">
-                <span>Gross Total</span>
+                <span>GROSS TOTAL</span>
               </td>
               <td className="border p-2 text-right">
                 <span>{payslip?.grossWages && payslip?.grossWages.toFixed(2)}</span>
               </td>
               <td className="border p-2">
-                <span>Total Deduction</span>
+                <span>TOTAL DEDUCTION</span>
               </td>
               <td className="border p-2 text-right">
                 <span>{payslip?.totalDeduction && payslip?.totalDeduction.toFixed(2)}</span>
               </td>
               <td className="border p-2">
-                <span>Net Amt</span>
+                <span>NET AMT.</span>
               </td>
               <td className="border p-2 text-right">
                 <span>{payslip?.netWages && payslip?.netWages.toFixed(2)}</span>

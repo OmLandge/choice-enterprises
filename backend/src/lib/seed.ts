@@ -192,21 +192,20 @@ async function main() {
         const year = targetDate.getFullYear();
         
         // Generate random values for payslip
-        const monthlyGross = faker.number.float({ min: 25000, max: 150000, fractionDigits: 2 });
+        const gross = faker.number.float({ min: 25000, max: 150000, fractionDigits: 2 });
         const daysWorked = faker.number.int({ min: 22, max: 26 });
         const basic = faker.number.float({ min: 20000, max: 120000, fractionDigits: 2 });
         const da = faker.number.float({ min: 5000, max: 20000, fractionDigits: 2 });
         const otHours = faker.number.int({ min: 0, max: 20 });
-        const basic_da = faker.number.float({min: 20000, max: 120000, fractionDigits: 2});
         const designation = faker.helpers.arrayElement(["Skilled", "Unskilled"]);
         const dateOfAdvance = faker.date.anytime().toISOString().split('T')[0];
         const perDayRate = faker.number.float({min: 20000, max: 120000, fractionDigits: 2});
         const perHourRate = faker.number.float({min: 20000, max: 120000, fractionDigits: 2});
         
         // Calculate gross wages (monthly + OT)
-        const hourlyRate = monthlyGross / (22 * 8); // Assuming 22 working days, 8 hours per day
+        const hourlyRate = gross / (22 * 8); // Assuming 22 working days, 8 hours per day
         const otWages = otHours * hourlyRate * 1.5; // 1.5x for OT
-        const grossWages = monthlyGross + otWages;
+        const grossWages = gross + otWages;
         
         // Calculate deductions (random percentage of gross)
         const totalDeduction = grossWages * faker.number.float({ min: 0.1, max: 0.3, fractionDigits: 2 });
@@ -223,11 +222,10 @@ async function main() {
             basic,
             da,
             otHours,
-            monthlyGross,
+            gross,
             grossWages,
             totalDeduction,
             netWages,
-            basic_da,
             designation,
             dateOfAdvance,
             perDayRate,
@@ -241,10 +239,10 @@ async function main() {
           let value = 0;
           if (field.category === FieldCategory.EARNING) {
             // Earning fields are typically a percentage of basic pay
-            value = monthlyGross * faker.number.float({ min: 0.05, max: 0.4, fractionDigits: 2 });
+            value = gross * faker.number.float({ min: 0.05, max: 0.4, fractionDigits: 2 });
           } else {
             // Deduction fields are typically a smaller percentage
-            value = monthlyGross * faker.number.float({ min: 0.01, max: 0.1, fractionDigits: 2 });
+            value = gross * faker.number.float({ min: 0.01, max: 0.1, fractionDigits: 2 });
           }
           
           await prisma.payslipFieldValue.create({

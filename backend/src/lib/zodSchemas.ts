@@ -20,6 +20,8 @@ export const contactSchema = z.object({
 export const companySchema = z.object({
     companyCode: z.string(),
     company: z.string(),
+    address: z.string(),
+    location: z.string(),
     fields: z.array(z.object({
         name: z.string(),
         category: z.enum(["EARNING", "DEDUCTION"]),
@@ -49,9 +51,8 @@ export const payslipSchema = z.object({
         daysWorked: z.coerce.number(),
         basic: z.coerce.number(),
         da: z.coerce.number(),
-        basic_da: z.coerce.number(),
         otHours: z.coerce.number(),
-        monthlyGross: z.coerce.number(),
+        gross: z.coerce.number(),
         grossWages: z.coerce.number(),
         totalDeduction: z.coerce.number(),
         netWages: z.coerce.number(),

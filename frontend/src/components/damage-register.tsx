@@ -1,16 +1,48 @@
-import { useEffect, useRef } from "react";
+import { BACKEND_URL } from "@/config";
+import axios from "axios";
+import { useEffect, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
+
+interface CompanyDetailsInterface {
+  name: string;
+  address: string;
+  location: string;
+}
+
+const getCompanyDetails = async (company: string) => {
+  const response = await axios.get(`${BACKEND_URL}/api/admin/companyDetails?companyCode=${company}`,{
+    headers: {
+      Authorization: `${localStorage.getItem('token')}`
+    }
+  });
+  if(response.status === 200) {
+    return response.data;
+  }else {
+    return [];
+  }
+}
 
 export const DamageRegister = ({
   onPrint,
+  company,
   month,
   year
 }: {
   onPrint: (handler: () => void) => void;
+  company: string;
   month: number;
   year: number;
 }) => {
   const bookRef = useRef<HTMLDivElement>(null);
+  const [companyDetails, setCompanyDetails] = useState<CompanyDetailsInterface>();
+
+  useEffect(() => {
+    getCompanyDetails(company).then(data => {
+      setCompanyDetails(data);
+  }).catch(error => {
+    console.log(error);
+  });
+  }, [company])
 
   const handlePrint = useReactToPrint({
     contentRef: bookRef,
@@ -86,7 +118,7 @@ export const DamageRegister = ({
                     </p>
 
                     <p className="mt-1 font-bold text-center">
-                        CIE AUTOMOTIVE INDIA LTD. (GEARS DIVISION PUNE)
+                        {companyDetails?.name}
                     </p>
               </div>
             </td>
@@ -110,7 +142,7 @@ export const DamageRegister = ({
               <span className="font-semibold">
                 Name & Address of principle employer :
               </span>{" "}
-              <span className="font-bold">Plot No. C23/2, Phase-II, MIDC, Varale, Tal. Khed, Dist. Pune - 410501</span>
+              <span className="font-bold">{companyDetails?.address}</span>
             </td>
           </tr>
 

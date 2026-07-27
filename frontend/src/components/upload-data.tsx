@@ -35,7 +35,7 @@ interface DialogUploadProps {
     handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     handleButtonClick: (e: React.MouseEvent) => void;
     file: File | null;
-    handleSubmit: (e: React.FormEvent, formData: {company: string, month?: number, year?: number}, companyFormData?: {companyCode: string, company: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]}) => void;
+    handleSubmit: (e: React.FormEvent, formData: {company: string, month?: number, year?: number}, companyFormData?: {companyCode: string, company: string, address: string, location: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]}) => void;
     companies?: any[];
     isEmployeeData?: boolean;
     isCompanyData?: boolean;
@@ -44,7 +44,7 @@ interface DialogUploadProps {
     setIsOpen?: (isOpen: boolean) => void;
 }
 
-const sendCompanyData = async (formData: {companyCode: string, company: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]}) => {
+const sendCompanyData = async (formData: {companyCode: string, company: string, address: string, location: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]}) => {
     try {
         const response = await axios.post(`${BACKEND_URL}/api/admin/company`, formData, {
           headers:{
@@ -125,7 +125,7 @@ export default function UploadData({ isCompanyData, isPayslipData, isEmployeeDat
     setIsOpen(false);
   }
 
-  const handleSubmit = async (e: React.FormEvent, formData: {company: string, month?: number, year?: number}, companyFormData?: {companyCode: string, company: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]}) => {
+  const handleSubmit = async (e: React.FormEvent, formData: {company: string, month?: number, year?: number}, companyFormData?: {companyCode: string, company: string, address: string, location: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]}) => {
     e.preventDefault();
     if(isCompanyData) {
       const res = await sendCompanyData(companyFormData!);
@@ -200,9 +200,11 @@ export function DialogUpload({
       year: 0
     });
 
-    const [companyFormData, setCompanyFormData] = useState<{companyCode: string, company: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]}>({
+    const [companyFormData, setCompanyFormData] = useState<{companyCode: string, company: string, address: string, location: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]}>({
       companyCode: '',
       company: '',
+      address: '',
+      location: '',
       fields: [],
     });
 
@@ -239,6 +241,10 @@ export function DialogUpload({
               <Input value={companyFormData.companyCode} onChange={(e) => setCompanyFormData({ ...companyFormData, companyCode: e.target.value })} />
               <Label htmlFor="username-1">Company Name</Label>
               <Input value={companyFormData.company} onChange={(e) => setCompanyFormData({ ...companyFormData, company: e.target.value })} />
+              <Label htmlFor="username-1">Company Address</Label>
+              <Input value={companyFormData.address} onChange={(e) => setCompanyFormData({ ...companyFormData, address: e.target.value })} />
+              <Label htmlFor="username-1">Company Location</Label>
+              <Input value={companyFormData.location} onChange={(e) => setCompanyFormData({ ...companyFormData, location: e.target.value })} />
               <Label htmlFor="username-1">Fields</Label>
               <Field fields={companyFormData.fields} setFields={(fields) => setCompanyFormData({ ...companyFormData, fields })} />
             </div>}

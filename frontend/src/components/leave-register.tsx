@@ -1,1100 +1,102 @@
-import { useEffect, useMemo, useRef } from "react";
+import { BACKEND_URL } from "@/config";
+import axios from "axios";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 
 const ROWS_PER_PAGE = 8;
 
+const getLeaveRegister = async (company: string, month: number, year: number) => {
+  const response = await axios.get(`${BACKEND_URL}/api/admin/leaveRegister?companyCode=${company}&month=${month}&year=${year}`,{
+    headers: {
+      Authorization: `${localStorage.getItem('token')}`
+    }
+  });
+  if(response.status === 200) {
+    return response.data;
+  }else {
+    return [];
+  }
+}
+
+interface LeaveRegisterInterface {
+  employee: {
+    name: string;
+  }
+  company: {
+    name: string;
+    address: string;
+    location: string;
+  }
+  daysWorked: number;
+}
+
+
 export const LeaveRegister = ({
+  company,
+  month,
+  year,
   onPrint,
 }: {
   onPrint: (handler: () => void) => void;
+  company: string;
+  month: number;
+  year: number;
 }) => {
   const bookRef = useRef<HTMLDivElement>(null);
+    const [data, setData] = useState<LeaveRegisterInterface[]>([]);
+    const [isData, setIsData] = useState<boolean>(false);
 
   const handlePrint = useReactToPrint({
     contentRef: bookRef,
   });
 
   useEffect(() => {
+    getLeaveRegister(company, month, year).then(data => {
+        if(data.length === 0) {
+            setIsData(false);
+            setData([]);
+            return;
+        }
+        setData(data);
+        setIsData(true);
+    }).catch(error => {
+      console.log(error);
+      setIsData(false);
+      setData([]);
+    });
+  }, [company, month, year])
+
+  useEffect(() => {
     onPrint?.(handlePrint);
   }, [handlePrint, onPrint]);
-
-  // ===================== Dummy Data =====================
-
-  const employees = [
-    {
-      name: "Ramesh Shanker Gajanan Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      d: "22",
-      l: "0",
-      m: "0",
-      w: "2",
-      t: "24",
-      b: "1.20",
-      lw: "0",
-      te: "1.20",
-      r: "0",
-      dy: "0",
-      f: "-",
-      to: "-",
-      bc: "Monthly Paid",
-      nr: "716",
-      cr: "-",
-      rw: "859",
-    },
-
-    // Keep all your remaining employee objects here...
-  ];
 
   // ===================== Split into pages =====================
 
   const pages = useMemo(() => {
-    const chunks: typeof employees[] = [];
+    const chunks: typeof data[] = [];
 
-    for (let i = 0; i < employees.length; i += ROWS_PER_PAGE) {
-      chunks.push(employees.slice(i, i + ROWS_PER_PAGE));
+    for (let i = 0; i < data.length; i += ROWS_PER_PAGE) {
+      chunks.push(data.slice(i, i + ROWS_PER_PAGE));
     }
 
     return chunks;
-  }, [employees]);
+  }, [data]);
 
-  const getTotals = (employees: any[]) => ({
-    d: employees.reduce((sum: number, e: any) => sum + Number(e.d || 0), 0),
-    l: employees.reduce((sum: number, e: any) => sum + Number(e.l || 0), 0),
-    m: employees.reduce((sum: number, e: any) => sum + Number(e.m || 0), 0),
-    w: employees.reduce((sum: number, e: any) => sum + Number(e.w || 0), 0),
-    t: employees.reduce((sum: number, e: any) => sum + Number(e.t || 0), 0),
-    b: employees.reduce((sum: number, e: any) => sum + Number(e.b || 0), 0),
-    lw: employees.reduce((sum: number, e: any) => sum + Number(e.lw || 0), 0),
-    te: employees.reduce((sum: number, e: any) => sum + Number(e.te || 0), 0),
-    r: employees.reduce((sum: number, e: any) => sum + Number(e.r || 0), 0),
-    dy: employees.reduce((sum: number, e: any) => sum + Number(e.dy || 0), 0),
-    f: employees.reduce((sum: number, e: any) => sum + Number(e.f || 0), 0),
-    to: employees.reduce((sum: number, e: any) => sum + Number(e.to || 0), 0),
-    nr: employees.reduce((sum: number, e: any) => sum + Number(e.nr || 0), 0),
-    cr: employees.reduce((sum: number, e: any) => sum + Number(e.cr || 0), 0),
-    rw: employees.reduce((sum: number, e: any) => sum + Number(e.rw || 0), 0),
-    });
-    const totals = getTotals(employees);
+const getTotals = (employees: any[]) => ({
+  daysWorked: employees.reduce((sum: number, e: any) => sum + Number(e.daysWorked || 0), 0),
+  balance: employees.reduce((sum: number, e: any) => sum + Number(e.balance || 0), 0),
+  // normalRate: employees.reduce((sum: number, e: any) => sum + Number(e.normalRate || 0), 0),
+  // rateOfWages: employees.reduce((sum: number, e: any) => sum + Number(e.rateOfWages || 0), 0),
+});
+
+const totals = getTotals(
+  data.map((d) => ({
+    daysWorked: d.daysWorked,
+    balance: Number((d.daysWorked / 20).toFixed(2)),
+    // normalRate: d.basic,
+    // rateOfWages: d.basic * d.daysWorked,
+  }))
+);
 
   return (
     <div ref={bookRef} className="bg-white">
@@ -1141,9 +143,9 @@ export const LeaveRegister = ({
             </colgroup>
 
           <tbody>
-            <TableHeader />
+            <TableHeader name={data[0].company.name} address={data[0].company.address} location={data[0].company.location} />
 
-            {pageEmployees.map((employee, index) => (
+            {pageEmployees.map((data, index) => (
               <tr
                 key={pageIndex * ROWS_PER_PAGE + index}
                 className="text-[10px]"
@@ -1153,15 +155,15 @@ export const LeaveRegister = ({
                 </td>
 
                 <td className="border border-black p-1 break-words">
-                  {employee.name}
+                  {data.employee.name}
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.my}
+                  {new Date(year, month - 1).toLocaleString("default", {month: "short"}).toUpperCase()}-{year}
                 </td>
 
                 <td className="border border-black p-1 text-center"> {/*total paid days*/}
-                  {employee.d}                      
+                  {data.daysWorked}                      
                 </td>
 
                 <td className="border border-black p-1 text-center">
@@ -1177,11 +179,11 @@ export const LeaveRegister = ({
                 </td>
 
                 <td className="border border-black p-1 text-center"> {/*total paid days*/}
-                  {employee.t}
+                  {data.daysWorked}
                 </td>
 
                 <td className="border border-black p-1 text-center">{/*total paid days / 20 */}
-                  {employee.b}
+                  {(data.daysWorked / 20).toFixed(2)}
                 </td>
 
                 <td className="border border-black p-1 text-center">
@@ -1189,7 +191,7 @@ export const LeaveRegister = ({
                 </td>
 
                 <td className="border border-black p-1 text-center"> {/*total paid days / 20 */}
-                  {employee.te}
+                  {(data.daysWorked / 20).toFixed(2)}
                 </td>
 
                 <td className="border border-black p-1 text-center">
@@ -1211,14 +213,14 @@ export const LeaveRegister = ({
                 <td className="border border-black p-1 text-center">
                   Monthly Paid
                 </td>
-                <td className="border border-black p-1 text-center">
-                  {employee.nr}
+                <td className="border border-black p-1 text-center"> {/* TODO */}
+                  {/* {employee.nr} */}716
                 </td>
                 <td className="border border-black p-1 text-center">
                   -
                 </td>
                 <td className="border border-black p-1 text-center"> {/*{employee.nr} * (total paid days / 20) */}
-                  {employee.rw}
+                  {/* {employee.rw} */}859
                 </td>
               </tr>
             ))}
@@ -1230,35 +232,35 @@ export const LeaveRegister = ({
 
                 <td className="border border-black"></td>
 
-                <td className="border border-black text-center">{isNaN(totals.d) ? "0.0": totals.d.toFixed(2)}</td>
+                <td className="border border-black text-center">{isNaN(totals.daysWorked) ? "0.0": totals.daysWorked.toFixed(2)}</td>
 
-                <td className="border border-black text-center">{isNaN(totals.l) ? "0.0": totals.l.toFixed(2)}</td>
+                <td className="border border-black text-center">0.0</td>
 
-                <td className="border border-black text-center">{isNaN(totals.m) ? "0.0": totals.m.toFixed(2)}</td>
+                <td className="border border-black text-center">0.0</td>
 
-                <td className="border border-black text-center">{isNaN(totals.w) ? "0.0": totals.w.toFixed(2)}</td>
+                <td className="border border-black text-center">0.0</td>
 
-                <td className="border border-black text-center">{isNaN(totals.t) ? "0.0": totals.t.toFixed(2)}</td>
+                <td className="border border-black text-center">{isNaN(totals.daysWorked) ? "0.0": totals.daysWorked.toFixed(2)}</td>
 
-                <td className="border border-black text-center">{isNaN(totals.b) ? "0.0": totals.b.toFixed(2)}</td>
+                <td className="border border-black text-center">{isNaN(totals.balance) ? "0.0": totals.balance.toFixed(2)}</td>
 
-                <td className="border border-black text-center">{isNaN(totals.lw) ? "0.0": totals.lw.toFixed(2)}</td>
+                <td className="border border-black text-center">0.0</td>
 
-                <td className="border border-black text-center">{isNaN(totals.te) ? "0.0": totals.te.toFixed(2)}</td>
+                <td className="border border-black text-center">{isNaN(totals.balance) ? "0.0": totals.balance.toFixed(2)}</td>
 
-                <td className="border border-black text-center">{isNaN(totals.r) ? "0.0": totals.r.toFixed(2)}</td>
+                <td className="border border-black text-center">0.0</td>
 
-                <td className="border border-black text-center">{isNaN(totals.dy) ? "0.0": totals.dy.toFixed(2)}</td>
+                <td className="border border-black text-center">0.0</td>
 
-                <td className="border border-black text-center">{isNaN(totals.f) ? "0.0": totals.f.toFixed(2)}</td>
-                <td className="border border-black text-center">{isNaN(totals.to) ? "0.0": totals.to.toFixed(2)}</td>
+                <td className="border border-black text-center">0.0</td>
+                <td className="border border-black text-center">0.0</td>
                 <td className="border border-black"></td>
 
-                <td className="border border-black text-center">{isNaN(totals.nr) ? "0.0": totals.nr.toFixed(2)}</td>
+                {/* <td className="border border-black text-center">{isNaN(totals.normalRate) ? "0.0": totals.normalRate.toFixed(2)}</td> */}
 
-                <td className="border border-black text-center">{isNaN(totals.cr) ? "0.0": totals.cr.toFixed(2)}</td>
+                <td className="border border-black text-center">0.0</td>
 
-                <td className="border border-black text-center">{isNaN(totals.rw) ? "0.0": totals.rw.toFixed(2)}</td>
+                {/* <td className="border border-black text-center">{isNaN(totals.rateOfWages) ? "0.0": totals.rateOfWages.toFixed(2)}</td> */}
             </tr>
             )}
           </tbody>
@@ -1269,7 +271,7 @@ export const LeaveRegister = ({
 </div>   
   )}
 
-function TableHeader() {
+function TableHeader({name, address, location}: {name: string, address: string, location: string}) {
     return (
     <>
     {/* ===================== Heading ===================== */}
@@ -1375,16 +377,13 @@ function TableHeader() {
               <span className="font-semibold">
                 Name of the Factory :
               </span>{" "}
-              <span className="font-semibold">Sany Wind Energy India Private Limited</span>
+              <span className="font-semibold">{name}</span>
 
               <p className="font-semibold">
-                Building No. 08, Plot No. E-4, Chakan MIDC, Phase III.
+                {address}
               </p>
               <p className="font-semibold">
-                Chakan, Pune 410501.
-              </p>
-              <p className="font-semibold">
-                Department/Location : <span className="font-bold">CHAKAN, PUNE</span>
+                Department/Location : <span className="font-bold">{location}</span>
               </p>
             </td>
 
@@ -1487,9 +486,9 @@ function TableHeader() {
               "TOTAL",
               "From",
               "To",
-            ].map((title) => (
+            ].map((title, idx) => (
               <td
-                key={title}
+                key={`${title}-${idx}`}
                 className="border border-black p-1 text-center align-middle whitespace-normal leading-tight"
               >
                 {title}

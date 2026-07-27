@@ -1,214 +1,94 @@
-import { useEffect, useMemo, useRef } from "react";
+import { BACKEND_URL } from "@/config";
+import axios from "axios";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 
 const ROWS_PER_PAGE = 12;
 
+const getHouseRentRegister = async (company: string, month: number, year: number) => {
+  const response = await axios.get(`${BACKEND_URL}/api/admin/houseRentRegister?companyCode=${company}&month=${month}&year=${year}`,{
+    headers: {
+      Authorization: `${localStorage.getItem('token')}`
+    }
+  });
+  if(response.status === 200) {
+    return response.data;
+  }else {
+    return [];
+  }
+}
+
+interface HouseRentRegisterInterface {
+  employee: {
+    name: string;
+  }
+  fieldValues: {
+    value: number;
+  }[]
+  company: {
+    name: string;
+  }
+}
+
 export const HouseRentRegister = ({
+  company,
+  month,
+  year,
   onPrint,
 }: {
+  company: string;
+  month: number;
+  year: number;
   onPrint: (handler: () => void) => void;
 }) => {
   const bookRef = useRef<HTMLDivElement>(null);
+  const [data, setData] = useState<HouseRentRegisterInterface[]>([]);
+  const [isData, setIsData] = useState<boolean>(false);
 
   const handlePrint = useReactToPrint({
     contentRef: bookRef,
   });
 
   useEffect(() => {
+      getHouseRentRegister(company, month, year).then(data => {
+          if(data.length === 0) {
+              setIsData(false);
+              setData([]);
+              return;
+          }
+          setData(data);
+          setIsData(true);
+      }).catch(error => {
+        console.log(error);
+        setIsData(false);
+        setData([]);
+      });
+    }, [company, month, year])
+
+  useEffect(() => {
     onPrint?.(handlePrint);
   }, [handlePrint, onPrint]);
-
-  // ===================== Dummy Data =====================
-
-  const employees = [
-    {
-      name: "Ramesh Shanker Gajanan Patil",
-      my: "sep-25",
-      hr: "859",
-      pm: "ACCOUNT PAID",
-      sig: "ACCOUNT PAID",
-      r: "",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      hr: "859",
-      pm: "ACCOUNT PAID",
-      sig: "ACCOUNT PAID",
-      r: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      hr: "859",
-      pm: "ACCOUNT PAID",
-      sig: "ACCOUNT PAID",
-      r: "",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      hr: "859",
-      pm: "ACCOUNT PAID",
-      sig: "ACCOUNT PAID",
-      r: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      hr: "859",
-      pm: "ACCOUNT PAID",
-      sig: "ACCOUNT PAID",
-      r: "",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      hr: "859",
-      pm: "ACCOUNT PAID",
-      sig: "ACCOUNT PAID",
-      r: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      hr: "859",
-      pm: "ACCOUNT PAID",
-      sig: "ACCOUNT PAID",
-      r: "",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      hr: "859",
-      pm: "ACCOUNT PAID",
-      sig: "ACCOUNT PAID",
-      r: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      hr: "859",
-      pm: "ACCOUNT PAID",
-      sig: "ACCOUNT PAID",
-      r: "",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      hr: "859",
-      pm: "ACCOUNT PAID",
-      sig: "ACCOUNT PAID",
-      r: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      hr: "859",
-      pm: "ACCOUNT PAID",
-      sig: "ACCOUNT PAID",
-      r: "",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      hr: "859",
-      pm: "ACCOUNT PAID",
-      sig: "ACCOUNT PAID",
-      r: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      hr: "859",
-      pm: "ACCOUNT PAID",
-      sig: "ACCOUNT PAID",
-      r: "",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      hr: "859",
-      pm: "ACCOUNT PAID",
-      sig: "ACCOUNT PAID",
-      r: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      hr: "859",
-      pm: "ACCOUNT PAID",
-      sig: "ACCOUNT PAID",
-      r: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      hr: "859",
-      pm: "ACCOUNT PAID",
-      sig: "ACCOUNT PAID",
-      r: "",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      hr: "859",
-      pm: "ACCOUNT PAID",
-      sig: "ACCOUNT PAID",
-      r: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      hr: "859",
-      pm: "ACCOUNT PAID",
-      sig: "ACCOUNT PAID",
-      r: "",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      hr: "859",
-      pm: "ACCOUNT PAID",
-      sig: "ACCOUNT PAID",
-      r: "",
-    },
-    {
-      name: "Ramesh Shanker Patil",
-      my: "sep-25",
-      hr: "859",
-      pm: "ACCOUNT PAID",
-      sig: "ACCOUNT PAID",
-      r: "",
-    },
-    {
-      name: "Ramesh Patil",
-      my: "sep-25",
-      hr: "859",
-      pm: "ACCOUNT PAID",
-      sig: "ACCOUNT PAID",
-      r: "",
-    },
-
-    // Keep all your remaining employee objects here...
-  ];
 
   // ===================== Split into pages =====================
 
   const pages = useMemo(() => {
-    const chunks: typeof employees[] = [];
+    const chunks: typeof data[] = [];
 
-    for (let i = 0; i < employees.length; i += ROWS_PER_PAGE) {
-      chunks.push(employees.slice(i, i + ROWS_PER_PAGE));
+    for (let i = 0; i < data.length; i += ROWS_PER_PAGE) {
+      chunks.push(data.slice(i, i + ROWS_PER_PAGE));
     }
 
     return chunks;
-  }, [employees]);
+  }, [data]);
 
   const getTotals = (employees: any[]) => ({
     hr: employees.reduce((sum: number, e: any) => sum + Number(e.hr || 0), 0),
-    });
-    const totals = getTotals(employees);
+  });
+  const totals = getTotals(
+    data.map((d) => ({
+      hr: d.fieldValues[0].value,
+    }))
+  );
 
   return (
     <div ref={bookRef} className="bg-white">
@@ -236,9 +116,9 @@ export const HouseRentRegister = ({
             </colgroup>
 
           <tbody>
-            <TableHeader />
+            <TableHeader name={data[0].company.name} month={month} year={year} />
 
-            {pageEmployees.map((employee, index) => (
+            {pageEmployees.map((data, index) => (
               <tr
                 key={pageIndex * ROWS_PER_PAGE + index}
                 className="text-[10px]"
@@ -248,27 +128,27 @@ export const HouseRentRegister = ({
                 </td>
 
                 <td className="border border-black p-1 break-words">
-                  {employee.name}
+                  {data.employee.name}
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.my}
+                  {new Date(year, month - 1).toLocaleString("default", {month: "short"}).toUpperCase()}-{year}
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.hr}
+                  {data.fieldValues[0].value}
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.pm}
+                  ACCOUNT PAID
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.sig}
+                  ACCOUNT PAID
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  {employee.r}
+                  
                 </td>
               </tr>
             ))}
@@ -295,7 +175,7 @@ export const HouseRentRegister = ({
 </div>   
   )}
 
-function TableHeader() {
+function TableHeader({name, month, year}: {name: string, month: number, year: number}) {
     return (
     <>
     {/* ===================== Heading ===================== */}
@@ -350,7 +230,7 @@ function TableHeader() {
                 </span>{" "}
 
                 <span className="font-bold">
-                    CIE AUTOMOTIVE INDIA LTD. (GEARS DIVISION PUNE)
+                    {name}
                 </span>
             </td>
           </tr>
@@ -371,7 +251,7 @@ function TableHeader() {
               <span className="font-semibold">
                 Month and year to which the House Rent Allowance relates
               </span>{" "}
-              <span className="font-bold">Sep-25</span>
+              <span className="font-bold">{new Date(year, month - 1).toLocaleString("default", {month: "short"}).toUpperCase()}-{year}</span>
             </td>
           </tr>
 
