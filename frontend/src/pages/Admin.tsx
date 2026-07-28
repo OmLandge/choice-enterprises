@@ -132,6 +132,7 @@ export default function AdminDashboard() {
     window.location.reload();
   }
 
+  console.log("docType:", JSON.stringify(docType));
   return (
     <DashboardLayout 
       name={name}
@@ -201,14 +202,14 @@ export default function AdminDashboard() {
         <div className="space-y-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <h2 className="text-lg font-semibold">Employee Payslip</h2>
-            <div className='flex items-center gap-4'>
+            <div className='flex items-center gap-1 sm:gap-4'>
               <Button 
                 variant="outline" 
                 onClick={() => printHandler?.()}
                 title="Print Payslip"
               >
                 <Printer className="h-4 w-4" />
-                {totalPayslips > 0 ? totalPayslips : ""}
+                {docType === DocumentType.PAYSLIP && totalPayslips > 0 ? totalPayslips : ""}
               </Button>
 
               <DocumentPicker onSelect={handleDocTypeSelect} />
@@ -217,6 +218,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className={'custom-scroll overflow-y-auto bg-white border rounded-lg w-full mx-auto overflow-auto shadow-sm' + (docType === DocumentType.PAYSLIP ? ' max-h-[950px]' : ' max-h-[600px]')}>
+            {docType === 'Doc Type' && !company && <div className='w-full flex justify-center items-center h-[300px] text-muted-foreground'>Please select document type, company and month-year</div>}
             {docType === DocumentType.PAYSLIP && (
               <AdminPayslip
                 month={selectedMonth}

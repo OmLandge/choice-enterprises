@@ -54,6 +54,12 @@ export const MaternityRegister = ({
     }
   }, [handlePrint, onPrint]);
 
+  if(!company){
+    return (
+      <div className='w-full flex justify-center items-center h-[300px] text-muted-foreground'>Please select Company</div>
+    )
+  }
+
   return (
     <div
       ref={bookRef}

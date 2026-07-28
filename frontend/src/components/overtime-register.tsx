@@ -85,6 +85,12 @@ export const OvertimeRegister = ({
     return chunks;
   }, [data]);
 
+  if(!isData) {
+    return (
+      <div className='w-full flex justify-center items-center h-[300px] text-muted-foreground'>No data found</div>
+    )
+  }
+
   return (
     <div ref={bookRef} className="bg-white">
   {pages.map((pageEmployees, pageIndex) => (

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const loginSchema = z.object({
-    unaNo: z.string(),
+    uanNo: z.string(),
 });
 
 export const getPayslipSchema = z.object({

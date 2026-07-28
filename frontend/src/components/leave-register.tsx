@@ -28,6 +28,8 @@ interface LeaveRegisterInterface {
     location: string;
   }
   daysWorked: number;
+  basic: number;
+  da: number
 }
 
 
@@ -85,18 +87,24 @@ export const LeaveRegister = ({
 const getTotals = (employees: any[]) => ({
   daysWorked: employees.reduce((sum: number, e: any) => sum + Number(e.daysWorked || 0), 0),
   balance: employees.reduce((sum: number, e: any) => sum + Number(e.balance || 0), 0),
-  // normalRate: employees.reduce((sum: number, e: any) => sum + Number(e.normalRate || 0), 0),
-  // rateOfWages: employees.reduce((sum: number, e: any) => sum + Number(e.rateOfWages || 0), 0),
+  normalRate: employees.reduce((sum: number, e: any) => sum + Number(e.normalRate || 0), 0),
+  rateOfWages: employees.reduce((sum: number, e: any) => sum + Number(e.rateOfWages || 0), 0),
 });
 
 const totals = getTotals(
   data.map((d) => ({
     daysWorked: d.daysWorked,
     balance: Number((d.daysWorked / 20).toFixed(2)),
-    // normalRate: d.basic,
-    // rateOfWages: d.basic * d.daysWorked,
+    normalRate: Number(((d.basic + d.da).toFixed(2))),
+    rateOfWages: Number(((d.basic + d.daysWorked)*(d.daysWorked / 20)).toFixed(2)),
   }))
 );
+
+  if(!isData) {
+    return (
+      <div className='w-full flex justify-center items-center h-[300px] text-muted-foreground'>No data found</div>
+    )
+  }
 
   return (
     <div ref={bookRef} className="bg-white">
@@ -213,14 +221,14 @@ const totals = getTotals(
                 <td className="border border-black p-1 text-center">
                   Monthly Paid
                 </td>
-                <td className="border border-black p-1 text-center"> {/* TODO */}
-                  {/* {employee.nr} */}716
+                <td className="border border-black p-1 text-center">
+                  {(data.basic + data.da).toFixed(2)}
                 </td>
                 <td className="border border-black p-1 text-center">
                   -
                 </td>
                 <td className="border border-black p-1 text-center"> {/*{employee.nr} * (total paid days / 20) */}
-                  {/* {employee.rw} */}859
+                  {((data.basic + data.da) * (data.daysWorked / 20)).toFixed(2)}
                 </td>
               </tr>
             ))}
@@ -256,11 +264,11 @@ const totals = getTotals(
                 <td className="border border-black text-center">0.0</td>
                 <td className="border border-black"></td>
 
-                {/* <td className="border border-black text-center">{isNaN(totals.normalRate) ? "0.0": totals.normalRate.toFixed(2)}</td> */}
+                <td className="border border-black text-center">{isNaN(totals.normalRate) ? "0.0": totals.normalRate.toFixed(2)}</td>
 
                 <td className="border border-black text-center">0.0</td>
 
-                {/* <td className="border border-black text-center">{isNaN(totals.rateOfWages) ? "0.0": totals.rateOfWages.toFixed(2)}</td> */}
+                <td className="border border-black text-center">{isNaN(totals.rateOfWages) ? "0.0": totals.rateOfWages.toFixed(2)}</td>
             </tr>
             )}
           </tbody>

@@ -78,7 +78,7 @@ export function MonthYearPicker({ onSelect, isModal }: MonthYearPickerProps) {
             <SelectValue>{year}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            {Array.from({ length: 5 }, (_, i) => year - 2 + i).map((y) => (
+            {Array.from({ length: 26 }, (_, i) => 2025 + i).map((y) => (
               <SelectItem key={y} value={y.toString()}>
                 {y}
               </SelectItem>

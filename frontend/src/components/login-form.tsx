@@ -8,7 +8,7 @@ import { SVGBackground } from './svg-background';
 
 export default function LoginForm() {
   const [formData, setFormData] = useState({
-    unaNo: '',
+    uanNo: '',
   });
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate();
@@ -55,18 +55,18 @@ export default function LoginForm() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="relative">
-            <label htmlFor="una" className="block text-sm font-medium text-gray-700 mb-1">
-              UNA Number
+            <label htmlFor="uan" className="block text-sm font-medium text-gray-700 mb-1">
+              UAN Number
             </label>
             <div className="relative">
               <input
-                id="una"
-                name="una"
+                id="uan"
+                name="uan"
                 type="text"
                 required
-                placeholder="Enter your UNA Number"
+                placeholder="Enter your UAN Number"
                 className="pl-10 pr-3 py-2 w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                onChange={(e) => setFormData({ ...formData, unaNo: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, uanNo: e.target.value })}
               />
               <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
             </div>

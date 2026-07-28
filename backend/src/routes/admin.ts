@@ -136,7 +136,8 @@ adminRouter.get('/leaveRegister', async (req, res) => {
                     }
                 },
                 daysWorked: true,
-                // TODO: Add other fields not known
+                basic: true,
+                da: true
             },
         });
         if (!leaveRegister) {
@@ -463,7 +464,7 @@ adminRouter.post("/employee", async(req, res) => {
         }
         const userRes = await prisma.user.createMany({
             data: zRes.data.employees.map((employee) => ({
-                unaNo: employee.uanNo,
+                uanNo: employee.uanNo,
                 name: employee.fullName,
                 role: employee.role,
                 employeeCode: employee.employeeCode,

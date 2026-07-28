@@ -43,6 +43,14 @@ export const AccidentBook = ({ company, month, year, onPrint }: { company: strin
             onPrint(handlePrint);
           }
         }, [handlePrint, onPrint])
+
+  if(!company){
+    return (
+      <div className='w-full flex justify-center items-center h-[300px] text-muted-foreground'>Please select Company</div>
+    )
+  }
+  
+
   return (
     <div ref={bookRef} className="bg-white p-8 min-h-[600px] overflow-x-auto">
       <table className="w-full table-fixed border-collapse border-2 border-black text-[12px]">

@@ -27,7 +27,7 @@ model Contact {
 // User model for authentication
 model User {
   id           Int       @id @default(autoincrement())
-  unaNo     String    @unique
+  uanNo     String    @unique
   name         String
   role         Role      @default(EMPLOYEE)
   employeeCode String?   @unique // Maps to an Employee if applicable

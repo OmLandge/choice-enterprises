@@ -61,7 +61,7 @@ export default function Dashboard() {
     sessionStorage.removeItem('user');
     localStorage.setItem("isLoggedIn", "false");
     
-    // Navigate to login page
+    // Navigate to home page
     navigate('/');
     
     // Force a full page reload to ensure all auth state is reset
@@ -125,7 +125,7 @@ export default function Dashboard() {
       <div className="space-y-4 gap-y-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <h2 className="text-lg font-semibold">Employee Payslip</h2>
-          <div className='flex items-center gap-4'>
+          <div className='flex items-center gap-1 sm:gap-4'>
             <Button 
               variant="outline" 
               size="icon"

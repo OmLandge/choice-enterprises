@@ -137,12 +137,12 @@ async function main() {
   // Create admin user
   const admin = await prisma.user.create({
     data: {
-      unaNo: 'CHOICE9881464331',
+      uanNo: 'CHOICE9881464331',
       name: 'Admin User',
       role: Role.ADMIN,
     },
   });
-  console.log(`Created admin user: ${admin.unaNo}`);
+  console.log(`Created admin user: ${admin.uanNo}`);
 
   // Create employees and payslips for each company
   const currentDate = new Date();
@@ -176,7 +176,7 @@ async function main() {
       // Create user for employee
       const user = await prisma.user.create({
         data: {
-          unaNo: faker.string.numeric(12),
+          uanNo: faker.string.numeric(12),
           name: fullName,
           role: Role.EMPLOYEE,
           employeeCode: employee.code,

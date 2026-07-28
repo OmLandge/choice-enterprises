@@ -85,6 +85,12 @@ export const AdvanceRegister = ({
   return chunks;
 }, [data]);
 
+  if(!isData) {
+    return (
+      <div className='w-full flex justify-center items-center h-[300px] text-muted-foreground'>No data found</div>
+    )
+  }
+
   return (
   <div ref={bookRef} className="bg-white">
     {pages.map((pageEmployees, pageIndex) => (
@@ -95,7 +101,91 @@ export const AdvanceRegister = ({
         <div className="p-8 min-h-[600px]">
       <table className="w-full table-fixed border-collapse border-2 border-black text-[10px]">
         <tbody>
-          {/* ===================== Heading ===================== */}
+          
+          <TableHeader name={data[0].company.name} address={data[0].company.address} month={month} year={year} />
+
+          {/* ===================== Dummy Data ===================== */}
+
+          {pageEmployees.map((data, index) => (
+            <tr key={index * ROWS_PER_PAGE + index} className="text-[9px]">
+              <td className="border border-black p-1 text-center">
+                {pageIndex * ROWS_PER_PAGE + index + 1}
+              </td>
+
+              <td className="border border-black p-1">
+                {data.employee.name}
+              </td>
+
+              <td className="border border-black p-1">
+                {data.employee.fatherName}
+              </td>
+
+              <td className="border border-black p-1">
+                {data.designation}
+              </td>
+
+              <td className="border border-black p-1 text-center">
+                {new Date(year, month - 1).toLocaleString("default", {month: "short"}).toUpperCase()}-{year}
+              </td>
+
+              <td className="border border-black p-1 text-center">
+                {data.fieldValues[0].value}
+              </td>
+
+              <td className="border border-black p-1">
+                PERSONAL REASON
+              </td>
+
+              <td className="border border-black p-1 text-center">
+                1
+              </td>
+
+              <td className="border border-black p-1 text-center">
+                
+              </td>
+
+              <td className="border border-black p-1 text-center">
+                {data.dateOfAdvance}
+              </td>
+
+              <td className="border border-black p-1 text-center">
+                
+              </td>
+            </tr>
+          ))}
+
+          
+          {/* ===================== Footer ===================== */}
+
+          
+          <tr>
+            <td
+              colSpan={11}
+              className="border border-black p-3"
+            >
+              <div className="flex justify-end">
+                <div className="text-center">
+                  <div className="h-12"></div>
+                  <p className="font-semibold text-[10px]">
+                    Signature of Contractor
+                  </p>
+                </div>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    ))}
+  </div>
+);
+};
+
+function TableHeader({name, address, month, year}:{name: string, address: string, month: number, year: number}){
+  return (
+    <>
+    {/* ===================== Heading ===================== */}
 
           <tr>
             <td
@@ -152,7 +242,7 @@ export const AdvanceRegister = ({
                     </p>
 
                     <p className="mt-1 font-bold text-center">
-                        {data[0].company.name}
+                        {name}
                     </p>
               </div>
             </td>
@@ -176,7 +266,7 @@ export const AdvanceRegister = ({
               <span className="font-semibold">
                 Name & Address of principle employer :
               </span>{" "}
-              <span className="font-bold">{data[0].company.address}</span>
+              <span className="font-bold">{address}</span>
             </td>
           </tr>
 
@@ -224,84 +314,6 @@ export const AdvanceRegister = ({
               </td>
             ))}
           </tr>
-
-          {/* ===================== Dummy Data ===================== */}
-
-          {pageEmployees.map((data, index) => (
-            <tr key={index} className="text-[9px]">
-              <td className="border border-black p-1 text-center">
-                {pageIndex * ROWS_PER_PAGE + index + 1}
-              </td>
-
-              <td className="border border-black p-1">
-                {data.employee.name}
-              </td>
-
-              <td className="border border-black p-1">
-                {data.employee.fatherName}
-              </td>
-
-              <td className="border border-black p-1">
-                {data.designation}
-              </td>
-
-              <td className="border border-black p-1 text-center">
-                {new Date(year, month - 1).toLocaleString("default", {month: "short"}).toUpperCase()}-{year}
-              </td>
-
-              <td className="border border-black p-1 text-center">
-                {data.fieldValues[0].value}
-              </td>
-
-              <td className="border border-black p-1">
-                PERSONAL REASON
-              </td>
-
-              <td className="border border-black p-1 text-center">
-                1
-              </td>
-
-              <td className="border border-black p-1 text-center">
-                
-              </td>
-
-              <td className="border border-black p-1 text-center">
-                {data.dateOfAdvance}
-              </td>
-
-              <td className="border border-black p-1 text-center">
-                
-              </td>
-            </tr>
-          ))}
-
-          
-          {/* ===================== Footer ===================== */}
-
-          
-
-          {pageIndex === pages.length - 1 && (
-  <tr>
-    <td
-      colSpan={11}
-      className="border border-black p-3"
-    >
-      <div className="flex justify-end">
-        <div className="text-center">
-          <div className="h-12"></div>
-          <p className="font-semibold text-[10px]">
-            Signature of Contractor
-          </p>
-        </div>
-      </div>
-    </td>
-  </tr>
-)}
-</tbody>
-        </table>
-      </div>
-    </div>
-    ))}
-  </div>
-);
-};
+    </>
+  )
+}

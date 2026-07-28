@@ -15,7 +15,7 @@ authRouter.post('/login', async (req, res) => {
   }
   const user = await prisma.user.findUnique({
     where: {
-      unaNo: body.unaNo,
+      uanNo: body.uanNo,
     },
   });
 
@@ -24,7 +24,7 @@ authRouter.post('/login', async (req, res) => {
     return;
   }
 
-  const token = jwt.sign({ unaNo: body.unaNo }, process.env.JWT_SECRET as string);
+  const token = jwt.sign({ uanNo: body.uanNo }, process.env.JWT_SECRET as string);
 
   res.status(200).json({ token, role: user.role, name: user.name });  
 });
