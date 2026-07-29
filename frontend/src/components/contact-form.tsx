@@ -8,13 +8,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { BACKEND_URL } from '@/config'
 import axios from 'axios'
-interface ContactFormData{
-  name: string
-  contactMethod: 'email' | 'phone'
-  email: string
-  phone: string
-  concern: string
-}
+import { ContactFormData } from '@/lib/types'
 
 export function ContactForm() {
   const [isLoading, setIsLoading] = useState(false)

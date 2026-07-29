@@ -1,4 +1,5 @@
 import { BACKEND_URL } from "@/config";
+import { OvertimeRegisterInterface } from "@/lib/types";
 import axios from "axios";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
@@ -16,22 +17,6 @@ const getOvertimeRegister = async (company: string, month: number, year: number)
   }else {
     return [];
   }
-}
-
-interface OvertimeRegisterInterface {
-  employee: {
-    name: string;
-    fatherName: string;
-    sex: string;
-  }
-  company: {
-    name: string;
-    address: string;
-  }
-  designation: string;
-  otHours: number;
-  perDayRate: number;
-  perHourRate: number;
 }
 
 export const OvertimeRegister = ({

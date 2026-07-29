@@ -5,13 +5,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { DocumentType } from "@/pages/Admin";
+import { DocumentPickerProps, DocumentType } from "@/lib/types";
 import { useEffect, useState } from 'react'
-
-interface DocumentPickerProps {
-    onSelect: (type: string) => void
-    isModal?: boolean
-}
 
 export function DocumentPicker({ onSelect, isModal }: DocumentPickerProps) {
     const [documentType, setDocumentType] = useState("Doc Type");

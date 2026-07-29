@@ -5,7 +5,6 @@ export const parseCSV = (file: File): Promise<Array<Record<string, string>>> => 
       reader.onload = (event) => {
         try {
           const text = event.target?.result as string;
-          console.log(text);
           const lines = text.split('\n').filter(line => line.trim() !== '');
           const headers = lines[0].split(',').map(header => header.trim().replace(/^"|"$/g, ''));
           

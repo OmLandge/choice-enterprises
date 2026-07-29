@@ -20,6 +20,7 @@ import { HouseRentRegister } from '@/components/house-rent-register'
 import { LeaveRegister } from '@/components/leave-register'
 import { MaternityRegister } from '@/components/maternity-register'
 import { OvertimeRegister } from '@/components/overtime-register'
+import { DocumentType } from '@/lib/types'
 
 const getCompanies = async () => {
   const response = await axios.get(`${BACKEND_URL}/api/admin/companies`,{
@@ -58,18 +59,6 @@ const getTotalContacts = async () => {
   }else {
     return 0;
   }
-}
-
-export enum DocumentType {
-  PAYSLIP = "Payslip",
-  ACCIDENT_BOOK = "Accident Book",
-  ADVANCE_REGISTER = "Advance Register",
-  DAMAGE_REGISTER = "Damage Register",
-  FINES_REGISTER = "Fines Register",
-  OVERTIME_REGISTER = "Overtime Register",
-  LEAVE_REGISTER = "Leave Register",
-  HOUSE_RENT_REGISTER = "House Rent Register",
-  MATERNITY_REGISTER = "Maternity Register",
 }
 
 export default function AdminDashboard() {
@@ -132,7 +121,6 @@ export default function AdminDashboard() {
     window.location.reload();
   }
 
-  console.log("docType:", JSON.stringify(docType));
   return (
     <DashboardLayout 
       name={name}
@@ -218,7 +206,8 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className={'custom-scroll overflow-y-auto bg-white border rounded-lg w-full mx-auto overflow-auto shadow-sm' + (docType === DocumentType.PAYSLIP ? ' max-h-[950px]' : ' max-h-[600px]')}>
-            {docType === 'Doc Type' && !company && <div className='w-full flex justify-center items-center h-[300px] text-muted-foreground'>Please select document type, company and month-year</div>}
+            {docType === 'Doc Type' && <div className='w-full flex justify-center items-center h-[300px] text-muted-foreground'>Please select document type, company and month-year</div>}
+            {!company && <div className='w-full flex justify-center items-center h-[300px] text-muted-foreground'>Please select document type, company and month-year</div>}
             {docType === DocumentType.PAYSLIP && (
               <AdminPayslip
                 month={selectedMonth}

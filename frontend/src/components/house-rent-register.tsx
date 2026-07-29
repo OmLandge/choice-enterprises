@@ -1,4 +1,5 @@
 import { BACKEND_URL } from "@/config";
+import { HouseRentRegisterInterface } from "@/lib/types";
 import axios from "axios";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
@@ -15,18 +16,6 @@ const getHouseRentRegister = async (company: string, month: number, year: number
     return response.data;
   }else {
     return [];
-  }
-}
-
-interface HouseRentRegisterInterface {
-  employee: {
-    name: string;
-  }
-  fieldValues: {
-    value: number;
-  }[]
-  company: {
-    name: string;
   }
 }
 

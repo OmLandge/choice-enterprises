@@ -1,4 +1,5 @@
 import { BACKEND_URL } from "@/config";
+import { AdvanceRegisterInterface } from "@/lib/types";
 import axios from "axios";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
@@ -16,22 +17,6 @@ const getAdvanceRegister = async (company: string, month: number, year: number) 
   }else {
     return [];
   }
-}
-
-interface AdvanceRegisterInterface {
-  employee: {
-    name: string;
-    fatherName: string;
-  }
-  fieldValues: {
-    value: number;
-  }[]
-  company: {
-    name: string;
-    address: string;
-  }
-  designation: string;
-  dateOfAdvance: string;
 }
 
 export const AdvanceRegister = ({

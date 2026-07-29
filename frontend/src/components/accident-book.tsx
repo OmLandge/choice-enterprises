@@ -1,13 +1,8 @@
 import { BACKEND_URL } from "@/config";
+import { CompanyDetailsInterface } from "@/lib/types";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
-
-interface CompanyDetailsInterface {
-  name: string;
-  address: string;
-  location: string;
-}
 
 const getCompanyDetails = async (company: string) => {
   const response = await axios.get(`${BACKEND_URL}/api/admin/companyDetails?companyCode=${company}`,{

@@ -178,7 +178,7 @@ export default function Home() {
             <li>
               <a
                 onClick={() => navigate('/contact')}
-                className="relative font-medium text-[#3b2a2a] hover:text-[#b30000] transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#b30000] after:transition-all after:duration-300 hover:after:w-full"
+                className="relative font-medium text-[#3b2a2a] hover:text-[#b30000] transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#b30000] after:transition-all after:duration-300 hover:after:w-full cursor-pointer"
               >
                 Contact
               </a>
@@ -186,7 +186,7 @@ export default function Home() {
             <li>
               <a
                 onClick={() => navigate('/login')}
-                className="relative font-medium text-[#3b2a2a] hover:text-[#b30000] transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#b30000] after:transition-all after:duration-300 hover:after:w-full"
+                className="relative font-medium text-[#3b2a2a] hover:text-[#b30000] transition-colors duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#b30000] after:transition-all after:duration-300 hover:after:w-full cursor-pointer"
               >
                 Login
               </a>
@@ -267,7 +267,7 @@ export default function Home() {
           <div style={heroStage(1100)}>
             <a
               onClick={() => navigate('/contact')}
-              className="inline-block bg-white text-[#3b2a2a] px-10 py-5 rounded-xl font-semibold text-lg border border-black/10 shadow-md hover:bg-[#b30000] hover:text-white hover:-translate-y-1 transition-all duration-300"
+              className="inline-block bg-white text-[#3b2a2a] px-10 py-5 rounded-xl font-semibold text-lg border border-black/10 shadow-md hover:bg-[#b30000] hover:text-white hover:-translate-y-1 transition-all duration-300 cursor-pointer"
             >
               Get in Touch
             </a>
@@ -367,7 +367,7 @@ export default function Home() {
           </h2>
           <a
             onClick={() => navigate('/contact')}
-            className="inline-block bg-white text-[#3b2a2a] px-10 py-5 rounded-xl font-semibold text-lg border border-black/10 shadow-md hover:bg-[#b30000] hover:text-white hover:-translate-y-1 transition-all duration-300 mb-4"
+            className="inline-block bg-white text-[#3b2a2a] px-10 py-5 rounded-xl font-semibold text-lg border border-black/10 shadow-md hover:bg-[#b30000] hover:text-white hover:-translate-y-1 transition-all duration-300 mb-4 cursor-pointer"
           >
             Get in Touch
           </a>

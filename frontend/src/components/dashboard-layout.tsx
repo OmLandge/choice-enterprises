@@ -3,11 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useState } from 'react'
-interface DashboardLayoutProps {
-  children: React.ReactNode
-  name: string
-  onLogout: () => void
-}
+import { DashboardLayoutProps } from '@/lib/types'
 
 export function DashboardLayout({ children, name, onLogout }: DashboardLayoutProps) {
   const initials = name

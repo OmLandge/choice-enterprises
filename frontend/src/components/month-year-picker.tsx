@@ -8,11 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
-interface MonthYearPickerProps {
-  onSelect: (month: number, year: number) => void
-  isModal?: boolean
-}
+import { MonthYearPickerProps } from "@/lib/types"
 
 export function MonthYearPicker({ onSelect, isModal }: MonthYearPickerProps) {
   const [month, setMonth] = React.useState(new Date().getMonth()+1)

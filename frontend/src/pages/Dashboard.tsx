@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { StaffPayslip } from '@/components/staff-payslip'
 import axios from 'axios'
 import { BACKEND_URL } from '@/config'
+import { EmployeeDetails } from '@/lib/types'
 
 const getTotalPayslips = async () => {
     const response = await axios.get(`${BACKEND_URL}/api/user/total-payslips`,{
@@ -21,14 +22,6 @@ const getTotalPayslips = async () => {
     }else {
         return [];
     }
-}
-
-interface EmployeeDetails {
-    id: string;
-    code: string;
-    name: string;
-    uanNo: string;
-    esiNo: string;
 }
 
 export default function Dashboard() {

@@ -20,29 +20,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Switch } from './ui/switch'
 import { Upload } from 'lucide-react'
-
-interface UploadDataProps {
-    isCompanyData: boolean;
-    isPayslipData: boolean;
-    isEmployeeData: boolean;
-    companies?: any[];
-}
-
-interface DialogUploadProps {
-    triggerText: string;
-    triggerDescription: string;
-    fileInputRef: React.RefObject<HTMLInputElement>;
-    handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    handleButtonClick: (e: React.MouseEvent) => void;
-    file: File | null;
-    handleSubmit: (e: React.FormEvent, formData: {company: string, month?: number, year?: number}, companyFormData?: {companyCode: string, company: string, address: string, location: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]}) => void;
-    companies?: any[];
-    isEmployeeData?: boolean;
-    isCompanyData?: boolean;
-    isPayslipData?: boolean;
-    isOpen?: boolean;
-    setIsOpen?: (isOpen: boolean) => void;
-}
+import { DialogUploadProps, FieldType, UploadDataProps } from '@/lib/types'
 
 const sendCompanyData = async (formData: {companyCode: string, company: string, address: string, location: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]}) => {
     try {
@@ -277,12 +255,6 @@ export function DialogUpload({
     </Dialog>
   )
 }
-
-type FieldType = {
-    name: string;
-    category: "EARNING" | "DEDUCTION";
-    isRequired: boolean;
-  };
 
 const Field = ({
     fields,
