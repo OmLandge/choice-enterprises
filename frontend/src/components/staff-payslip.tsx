@@ -28,78 +28,31 @@ export function StaffPayslip({ month, year, onPrint }: PayslipProps) {
   const printWindow = window.open("", "_blank");
 
   if (!printWindow) {
-    alert("Please allow popups to print.");
+    alert("Please allow popups.");
     return;
   }
 
-  // Copy all stylesheets
-  const styles = Array.from(document.querySelectorAll("link[rel='stylesheet'], style"))
-    .map((node) => node.outerHTML)
-    .join("");
+  // Copy styles
+  document
+    .querySelectorAll('link[rel="stylesheet"], style')
+    .forEach((node) => {
+      printWindow.document.head.appendChild(node.cloneNode(true));
+    });
 
-  printWindow.document.write(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>Payslip</title>
-        ${styles}
-        <style>
-          html, body {
-            margin: 0;
-            padding: 0;
-            background: white;
-          }
+  const clone = payslipRef.current.cloneNode(true);
 
-          @page {
-            size: A4;
-            margin: 10mm;
-          }
+  printWindow.document.body.appendChild(clone);
 
-          img {
-            max-width: 100%;
-          }
-        </style>
-      </head>
+  printWindow.document.title = "Payslip";
 
-      <body>
-        ${payslipRef.current.outerHTML}
-      </body>
-    </html>
-  `);
+  printWindow.document.body.style.margin = "0";
+  printWindow.document.body.style.background = "white";
 
-  printWindow.document.close();
-
-  // Wait for images to load
-  const images = printWindow.document.images;
-
-  if (images.length === 0) {
+  setTimeout(() => {
     printWindow.focus();
     printWindow.print();
     printWindow.close();
-    return;
-  }
-
-  let loaded = 0;
-
-  const print = () => {
-    loaded++;
-    if (loaded === images.length) {
-      setTimeout(() => {
-        printWindow.focus();
-        printWindow.print();
-        printWindow.close();
-      }, 300);
-    }
-  };
-
-  Array.from(images).forEach((img) => {
-    if (img.complete) {
-      print();
-    } else {
-      img.onload = print;
-      img.onerror = print;
-    }
-  });
+  }, 1000);
 };
 
   useEffect(() => {
