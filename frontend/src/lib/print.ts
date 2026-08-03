@@ -17,19 +17,31 @@ export const handlePrint = (ref: RefObject<HTMLDivElement>, title: string) => {
       printWindow.document.head.appendChild(node.cloneNode(true));
     });
 
-  const clone = ref.current.cloneNode(true);
+  // Remove page margins
+  const style = printWindow.document.createElement("style");
+  style.textContent = `
+    @page {
+      margin: 0;
+    }
 
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: white;
+    }
+  `;
+  printWindow.document.head.appendChild(style);
+
+  const clone = ref.current.cloneNode(true);
   printWindow.document.body.appendChild(clone);
 
   printWindow.document.title = title;
-
-  printWindow.document.body.style.margin = "0";
-  printWindow.document.body.style.background = "white";
 
   setTimeout(() => {
     printWindow.focus();
     printWindow.print();
   }, 1000);
+
   setTimeout(() => {
     printWindow.close();
   }, 6000);
