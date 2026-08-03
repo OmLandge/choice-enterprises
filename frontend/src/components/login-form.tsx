@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { User, Lock, Eye, EyeOff } from 'lucide-react'
+import { User } from 'lucide-react'
 import { BACKEND_URL } from '@/config';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -8,11 +8,9 @@ import { SVGBackground } from './svg-background';
 
 export default function LoginForm() {
   const [formData, setFormData] = useState({
-    username: '',
-    password: '',
+    uanNo: '',
   });
   const [isLoading, setIsLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,10 +32,6 @@ export default function LoginForm() {
     }
   }
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword)
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 relative overflow-hidden">
       {/* SVG Background */}
@@ -47,7 +41,7 @@ export default function LoginForm() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg relative z-10"
+        className="w-full max-w-xs sm:max-w-md p-8 bg-white rounded-lg shadow-lg relative z-10"
       >
         <div className="text-center mb-8">
           <img
@@ -61,45 +55,20 @@ export default function LoginForm() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="relative">
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-              Username
+            <label htmlFor="uan" className="block text-sm font-medium text-gray-700 mb-1">
+              UAN Number
             </label>
             <div className="relative">
               <input
-                id="username"
-                name="username"
+                id="uan"
+                name="uan"
                 type="text"
                 required
-                placeholder="Enter your username"
+                placeholder="Enter your UAN Number"
                 className="pl-10 pr-3 py-2 w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, uanNo: e.target.value })}
               />
               <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-            </div>
-          </div>
-
-          <div className="relative">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                required
-                placeholder="Enter your password"
-                className="pl-10 pr-10 py-2 w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              />
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
             </div>
           </div>
 

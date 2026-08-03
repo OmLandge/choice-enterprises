@@ -27,8 +27,7 @@ model Contact {
 // User model for authentication
 model User {
   id           Int       @id @default(autoincrement())
-  username     String    @unique
-  password     String
+  uanNo     String    @unique
   name         String
   role         Role      @default(EMPLOYEE)
   employeeCode String?   @unique // Maps to an Employee if applicable
@@ -44,8 +43,10 @@ model Employee {
   id        Int       @id @default(autoincrement())
   code      String    @unique // Employee code for mapping
   name      String
+  fatherName String
+  sex       String
   user      User?     
-  uanNo     String?   // Universal Account Number for PF
+  uanNo     String   // Universal Account Number for PF
   esiNo     String?   // Employee State Insurance Number
   payslips  Payslip[] // Relation to Payslip
   createdAt DateTime  @default(now())
@@ -57,6 +58,8 @@ model Company {
   id            Int                   @id @default(autoincrement())
   code          String                @unique // Company code for mapping
   name          String
+  address       String?
+  location      String?
   payslips      Payslip[]             // Relation to Payslip
   payslipFields CompanyPayslipField[] // Relation to Custom Payslip Fields
   createdAt     DateTime              @default(now())
@@ -88,10 +91,16 @@ model Payslip {
   year           Int
   daysWorked     Int     // Days worked in the month
   otHours        Int     // OT hours
-  monthlyGross   Float     // Monthly gross
+  gross   Float     // Monthly gross
   grossWages     Float     // Total gross wages
   totalDeduction Float     // Total deductions
   netWages       Float     // Net wages after deductions
+  designation String
+  dateOfAdvance String?
+  basic     Float
+  da        Float
+  perDayRate Float
+  perHourRate Float
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
@@ -113,7 +122,7 @@ model PayslipFieldValue {
   payslip   Payslip             @relation(fields: [payslipId], references: [id])
   fieldId   Int                 // Foreign Key to CompanyPayslipField
   field     CompanyPayslipField @relation(fields: [fieldId], references: [id])
-  value     Float               // Value of the custom field (Amount or Percentage)
+  value     Float?               // Value of the custom field (Amount or Percentage)
   createdAt DateTime            @default(now())
   updatedAt DateTime            @updatedAt
 

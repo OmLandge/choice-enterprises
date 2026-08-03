@@ -5,13 +5,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { CompanyPickerProps } from "@/lib/types";
 import { useEffect, useState } from 'react'
-
-interface CompanyPickerProps {
-    onSelect: (companyCode: string) => void
-    companies: {code: string, name: string}[]
-    isModal?: boolean
-}
 
 export function CompanyPicker({ onSelect, companies, isModal }: CompanyPickerProps) {
     const [companyName, setCompanyName] = useState("Choose...");

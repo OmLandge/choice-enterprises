@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { StaffPayslip } from '@/components/staff-payslip'
 import axios from 'axios'
 import { BACKEND_URL } from '@/config'
+import { EmployeeDetails } from '@/lib/types'
 
 const getTotalPayslips = async () => {
     const response = await axios.get(`${BACKEND_URL}/api/user/total-payslips`,{
@@ -21,14 +22,6 @@ const getTotalPayslips = async () => {
     }else {
         return [];
     }
-}
-
-interface EmployeeDetails {
-    id: string;
-    code: string;
-    name: string;
-    uanNo: string;
-    esiNo: string;
 }
 
 export default function Dashboard() {
@@ -61,15 +54,10 @@ export default function Dashboard() {
     sessionStorage.removeItem('user');
     localStorage.setItem("isLoggedIn", "false");
     
-    // Navigate to login page
+    // Navigate to home page
     navigate('/');
     
     // Force a full page reload to ensure all auth state is reset
-    window.location.reload();
-  }
-
-  const handleChangePassword = () => {
-    navigate('/change-password');
     window.location.reload();
   }
 
@@ -84,7 +72,6 @@ export default function Dashboard() {
     <DashboardLayout 
       name={name} 
       onLogout={handleLogout}
-      changePassword={handleChangePassword}
     >
       <div className="space-y-6">
         <div>
@@ -131,7 +118,7 @@ export default function Dashboard() {
       <div className="space-y-4 gap-y-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <h2 className="text-lg font-semibold">Employee Payslip</h2>
-          <div className='flex items-center gap-4'>
+          <div className='flex items-center gap-1 sm:gap-4'>
             <Button 
               variant="outline" 
               size="icon"

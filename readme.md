@@ -6,14 +6,18 @@ A full-stack payroll management system built with React, Node.js, and PostgreSQL
 
 - **User Authentication**: Secure login for both admin and employees
 - **Role-based Access Control**: Different dashboards for admin and employees
-- **Company Management**: Add and manage multiple companies
-- **Employee Management**: Add and manage employee details
-- **Payslip Generation**: Generate and manage employee payslips
+- **Company Management**: Add and manage multiple companies with custom fields
+- **Employee Management**: Add and manage employee details via CSV
+- **Payslip Generation**: Generate and manage employee payslips in bulk
 - **Custom Fields**: Define custom earnings and deductions per company
+- **Dynamic Field Updates**: Add new fields to existing companies
+- **Automatic Register Generation**: Generate Overtime, Leave, House Rent, Accident, Damage, Fines, Maternity and Advance registers from payslip data
+- **Print-Ready Registers**: All registers are formatted for printing with proper pagination
 - **Responsive Design**: Works on desktop and mobile devices
-- **Secure**: Password hashing and JWT authentication
+- **Secure**: JWT authentication
 - **CSV Upload**: Upload employee, payslip data in CSV format
 - **Contact Support**: Contact support for assistance
+- **Production Ready**: Build scripts for both frontend and backend
 
 ## Tech Stack
 
@@ -30,7 +34,6 @@ A full-stack payroll management system built with React, Node.js, and PostgreSQL
 - Prisma ORM
 - PostgreSQL database
 - JWT for authentication
-- Bcrypt for password hashing
 
 ### Development Tools
 - Vite for frontend build tooling
@@ -70,11 +73,12 @@ A full-stack payroll management system built with React, Node.js, and PostgreSQL
 ```
 DATABASE_URL="postgresql://username:password@localhost:5432/your_database?schema=public"
 JWT_SECRET=your_jwt_secret
+PORT=3000
 ```
 
-### Frontend config (/src/config.ts)
+### Frontend (.env)
 ```
-BACKEND_URL=http://localhost:3000    // or your backend url
+VITE_BACKEND_URL=http://localhost:3000
 ```
 
 ## Database Setup
@@ -93,6 +97,8 @@ BACKEND_URL=http://localhost:3000    // or your backend url
 
 ## Running the Application
 
+### Development Mode
+
 1. **Start the backend server**
    ```bash
    cd backend
@@ -107,36 +113,64 @@ BACKEND_URL=http://localhost:3000    // or your backend url
 
 3. Open your browser and navigate to `http://localhost:5173`
 
+### Production Build
+
+1. **Build the backend**
+   ```bash
+   cd backend
+   npm run build
+   ```
+
+2. **Build the frontend**
+   ```bash
+   cd frontend
+   npm run build
+   ```
+
+3. **Start the production server**
+   ```bash
+   cd backend
+   npm start
+   ```
+
+The frontend build will be in the `frontend/dist` directory and can be served with any static file server.
+
 ## Default Admin Credentials
 
-- **Username**: admin
-- **Password**: admin123
+- **UAN Number**: CHOICE00001
 
 ## API Documentation
 
 ### Auth Endpoints
 - `POST /api/auth/login` - User login
-- `POST /api/auth/update-password` - Update user password
 
 ### Company Endpoints
 - `GET /api/admin/companies` - Get all companies
-- `POST /api/admin/company` - Create a new company
+- `GET /api/admin/companyDetails` - Get company details by code
+- `POST /api/admin/company` - Create a new company with custom fields
+- `POST /api/admin/company-fields` - Add new fields to an existing company
 
 ### Employee Endpoints
-- `GET /api/admin/total-employees` - Get total employees
-- `POST /api/admin/employee` - Create a new employee using CSV file
+- `GET /api/admin/total-employees` - Get total employees count
+- `POST /api/admin/employee` - Create employees using CSV file
 
 ### Payslip Endpoints (Admin)
-- `GET /api/admin/bulkPayslips` - Get all payslips
-- `POST /api/admin/payslips` - Create a new bulk payslips using CSV file
+- `GET /api/admin/bulkPayslips` - Get all payslips for a company, month, and year
+- `POST /api/admin/payslips` - Create bulk payslips using CSV file
 
 ### Payslip Endpoints (User)
-- `GET /api/user/payslip` - Get a payslip
-- `GET /api/user/total-payslips` - Get total payslips for user
+- `GET /api/user/payslip` - Get a specific payslip by month and year
+- `GET /api/user/total-payslips` - Get total payslips count for user
+
+### Register Endpoints (Admin)
+- `GET /api/admin/overtimeRegister` - Get overtime register
+- `GET /api/admin/leaveRegister` - Get leave register
+- `GET /api/admin/houseRentRegister` - Get house rent register
+- `GET /api/admin/advanceRegister` - Get advance register
 
 ### Contact Endpoints
-- `GET /api/admin/contacts` - Get all contacts
-- `GET /api/admin/total-contacts` - Get total contacts
+- `GET /api/admin/contacts` - Get all contact requests
+- `GET /api/admin/total-contacts` - Get total contacts count
 
 ## Project Structure
 

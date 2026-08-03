@@ -11,6 +11,16 @@ import { AdminPayslip } from '@/components/admin-payslip'
 import axios from 'axios'
 import { BACKEND_URL } from '@/config'
 import UploadData from '@/components/upload-data'
+import { DocumentPicker } from '@/components/document-picker'
+import { AccidentBook } from '@/components/accident-book'
+import { AdvanceRegister } from '@/components/advance-register'
+import { DamageRegister } from '@/components/damage-register'
+import { FinesRegister } from '@/components/fines-register'
+import { HouseRentRegister } from '@/components/house-rent-register'
+import { LeaveRegister } from '@/components/leave-register'
+import { MaternityRegister } from '@/components/maternity-register'
+import { OvertimeRegister } from '@/components/overtime-register'
+import { DocumentType } from '@/lib/types'
 
 const getCompanies = async () => {
   const response = await axios.get(`${BACKEND_URL}/api/admin/companies`,{
@@ -61,6 +71,7 @@ export default function AdminDashboard() {
   const [contacts, setContacts] = useState(0);
   const [totalPayslips, setTotalPayslips] = useState<number>(0);
   const [totalEmployees, setTotalEmployees] = useState<number>(0);
+  const [docType, setDocType] = useState<string>('');
   
   useAuthRedirect();
 
@@ -98,9 +109,8 @@ export default function AdminDashboard() {
     setCompany(company)
   }
 
-  const handleChangePassword = () => {
-    navigate('/change-password');
-    window.location.reload();
+  const handleDocTypeSelect = (docType: string) => {
+    setDocType(docType);
   }
 
   const handleLogout = () => {
@@ -115,7 +125,6 @@ export default function AdminDashboard() {
     <DashboardLayout 
       name={name}
       onLogout={handleLogout}
-      changePassword={handleChangePassword}
     >
       <div className="space-y-6">
         <div>
@@ -181,27 +190,97 @@ export default function AdminDashboard() {
         <div className="space-y-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <h2 className="text-lg font-semibold">Employee Payslip</h2>
-            <div className='flex items-center gap-4'>
+            <div className='flex items-center gap-1 sm:gap-4'>
               <Button 
                 variant="outline" 
                 onClick={() => printHandler?.()}
                 title="Print Payslip"
               >
                 <Printer className="h-4 w-4" />
-                {totalPayslips > 0 ? totalPayslips : ""}
+                {docType === DocumentType.PAYSLIP && totalPayslips > 0 ? totalPayslips : ""}
               </Button>
+
+              <DocumentPicker onSelect={handleDocTypeSelect} />
               <CompanyPicker companies={companies} onSelect={handleCompanySelect} />
               <MonthYearPicker onSelect={handleDateSelect} />
             </div>
           </div>
-          <div className='max-h-[950px] custom-scroll overflow-y-auto bg-white border rounded-lg max-w-3xl mx-auto overflow-auto shadow-sm'>
-            <AdminPayslip
-              month={selectedMonth}
-              year={selectedYear}
-              company={company}
-              onPrint={(handler) => setPrintHandler(() => handler)}
-              setTotalPayslips={(total) => setTotalPayslips(total)}
-            />
+          <div className={'custom-scroll overflow-y-auto bg-white border rounded-lg w-full mx-auto overflow-auto shadow-sm' + (docType === DocumentType.PAYSLIP ? ' max-h-[950px]' : ' max-h-[600px]')}>
+            {docType === 'Doc Type' && <div className='w-full flex justify-center items-center h-[300px] text-muted-foreground'>Please select document type, company and month-year</div>}
+            {!company && <div className='w-full flex justify-center items-center h-[300px] text-muted-foreground'>Please select document type, company and month-year</div>}
+            {docType === DocumentType.PAYSLIP && (
+              <AdminPayslip
+                month={selectedMonth}
+                year={selectedYear}
+                company={company}
+                onPrint={(handler) => setPrintHandler(() => handler)}
+                setTotalPayslips={(total) => setTotalPayslips(total)}
+              />
+            )}
+            {docType === DocumentType.ACCIDENT_BOOK && (
+              <AccidentBook
+                company={company}
+                month={selectedMonth}
+                year={selectedYear}
+                onPrint={(handler) => setPrintHandler(() => handler)}
+               />
+            )}
+            {docType === DocumentType.ADVANCE_REGISTER && (
+              <AdvanceRegister
+                company={company}
+                month={selectedMonth}
+                year={selectedYear}
+                onPrint={(handler) => setPrintHandler(() => handler)}
+              />
+            )}
+            {docType === DocumentType.DAMAGE_REGISTER && (
+              <DamageRegister
+                company={company}
+                month={selectedMonth}
+                year={selectedYear}
+                onPrint={(handler) => setPrintHandler(() => handler)}
+              />
+            )}
+            {docType === DocumentType.FINES_REGISTER && (
+              <FinesRegister
+                company={company}
+                month={selectedMonth}
+                year={selectedYear}
+                onPrint={(handler) => setPrintHandler(() => handler)}
+              />
+            )}
+            {docType === DocumentType.HOUSE_RENT_REGISTER && (
+              <HouseRentRegister
+                company={company}
+                month={selectedMonth}
+                year={selectedYear}
+                onPrint={(handler) => setPrintHandler(() => handler)}
+              />
+            )}
+            {docType === DocumentType.LEAVE_REGISTER && (
+              <LeaveRegister
+                company={company}
+                month={selectedMonth}
+                year={selectedYear}
+                onPrint={(handler) => setPrintHandler(() => handler)}
+              />
+            )}
+            {docType === DocumentType.MATERNITY_REGISTER && (
+              <MaternityRegister
+                company={company}
+                month={selectedMonth}
+                year={selectedYear}
+                onPrint={(handler) => setPrintHandler(() => handler)}
+              />
+            )}
+            {docType === DocumentType.OVERTIME_REGISTER && (
+              <OvertimeRegister
+                company={company}
+                month={selectedMonth}
+                year={selectedYear}
+                onPrint={(handler) => setPrintHandler(() => handler)}
+              />
+            )}
           </div>
         </div>
       </div>

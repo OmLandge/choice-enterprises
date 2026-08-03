@@ -1,8 +1,7 @@
 import { z } from 'zod';
 
 export const loginSchema = z.object({
-    username: z.string(),
-    password: z.string(),
+    uanNo: z.string(),
 });
 
 export const getPayslipSchema = z.object({
@@ -21,6 +20,17 @@ export const contactSchema = z.object({
 export const companySchema = z.object({
     companyCode: z.string(),
     company: z.string(),
+    address: z.string(),
+    location: z.string(),
+    fields: z.array(z.object({
+        name: z.string(),
+        category: z.enum(["EARNING", "DEDUCTION"]),
+        isRequired: z.boolean(),
+    })),
+});
+
+export const companyFieldsSchema = z.object({
+    companyCode: z.string(),
     fields: z.array(z.object({
         name: z.string(),
         category: z.enum(["EARNING", "DEDUCTION"]),
@@ -32,11 +42,11 @@ export const employeeSchema = z.object({
     employees: z.array(z.object({
     employeeCode: z.string(),
     esiNo: z.preprocess(val => val === '' ? 'N/A': val, z.string()),
-    uanNo: z.preprocess(val => val === '' ? 'N/A': val, z.string()),
+    uanNo: z.string(),
     fullName: z.string(),
-    password: z.string(),
+    fatherName: z.string(),
+    sex: z.string(),
     role: z.enum(["EMPLOYEE"]),
-    username: z.string(),
 }))});
 
 export const payslipSchema = z.object({
@@ -48,15 +58,18 @@ export const payslipSchema = z.object({
     payslips: z.array(z.object({
         employeeCode: z.string(),
         daysWorked: z.coerce.number(),
+        basic: z.coerce.number(),
+        da: z.coerce.number(),
         otHours: z.coerce.number(),
-        monthlyGross: z.coerce.number(),
+        gross: z.coerce.number(),
         grossWages: z.coerce.number(),
         totalDeduction: z.coerce.number(),
         netWages: z.coerce.number(),
+        designation: z.string(),
+        dateOfAdvance: z.string().optional(),
+        perDayRate: z.coerce.number(),
+        perHourRate: z.coerce.number(),
     }).catchall(z.coerce.number())),
 });
 
-export const updatePasswordSchema = z.object({
-    previousPassword: z.string(),
-    newPassword: z.string(),
-});
+

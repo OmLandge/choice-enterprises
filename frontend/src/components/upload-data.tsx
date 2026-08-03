@@ -20,33 +20,28 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Switch } from './ui/switch'
 import { Upload } from 'lucide-react'
+import { DialogUploadProps, FieldType, UploadDataProps } from '@/lib/types'
 
-interface UploadDataProps {
-    isCompanyData: boolean;
-    isPayslipData: boolean;
-    isEmployeeData: boolean;
-    companies?: any[];
-}
-
-interface DialogUploadProps {
-    triggerText: string;
-    triggerDescription: string;
-    fileInputRef: React.RefObject<HTMLInputElement>;
-    handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    handleButtonClick: (e: React.MouseEvent) => void;
-    file: File | null;
-    handleSubmit: (e: React.FormEvent, formData: {company: string, month?: number, year?: number}, companyFormData?: {companyCode: string, company: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]}) => void;
-    companies?: any[];
-    isEmployeeData?: boolean;
-    isCompanyData?: boolean;
-    isPayslipData?: boolean;
-    isOpen?: boolean;
-    setIsOpen?: (isOpen: boolean) => void;
-}
-
-const sendCompanyData = async (formData: {companyCode: string, company: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]}) => {
+const sendCompanyData = async (formData: {companyCode: string, company: string, address: string, location: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]}) => {
     try {
         const response = await axios.post(`${BACKEND_URL}/api/admin/company`, formData, {
+          headers:{
+            Authorization: `${localStorage.getItem('token')}`
+          }
+        });
+        if(response.status === 200) {
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+}
+
+const sendCompanyFields = async (companyCode: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]) => {
+    try {
+        const response = await axios.post(`${BACKEND_URL}/api/admin/company-fields`, { companyCode, fields }, {
           headers:{
             Authorization: `${localStorage.getItem('token')}`
           }
@@ -125,16 +120,27 @@ export default function UploadData({ isCompanyData, isPayslipData, isEmployeeDat
     setIsOpen(false);
   }
 
-  const handleSubmit = async (e: React.FormEvent, formData: {company: string, month?: number, year?: number}, companyFormData?: {companyCode: string, company: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]}) => {
+  const handleSubmit = async (e: React.FormEvent, formData: {company: string, month?: number, year?: number}, companyFormData?: {companyCode: string, company: string, address: string, location: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]}, isUpdate?: boolean) => {
     e.preventDefault();
     if(isCompanyData) {
-      const res = await sendCompanyData(companyFormData!);
-      if(res) {
-        alert('Company data uploaded successfully');
-        handleClose();
-      }else {
-        alert('Failed to upload company data');
-        handleClose();
+      if(isUpdate) {
+        const res = await sendCompanyFields(companyFormData!.companyCode, companyFormData!.fields);
+        if(res) {
+          alert('Company fields updated successfully');
+          handleClose();
+        }else {
+          alert('Failed to update company fields');
+          handleClose();
+        }
+      } else {
+        const res = await sendCompanyData(companyFormData!);
+        if(res) {
+          alert('Company data uploaded successfully');
+          handleClose();
+        }else {
+          alert('Failed to upload company data');
+          handleClose();
+        }
       }
     } else{
       const fileData = await handleFileSubmit();
@@ -179,15 +185,15 @@ export default function UploadData({ isCompanyData, isPayslipData, isEmployeeDat
 
 
 export function DialogUpload({
-    triggerText, 
-    triggerDescription, 
-    fileInputRef, 
-    handleFileChange, 
-    handleButtonClick, 
-    file, 
-    handleSubmit, 
-    companies, 
-    isEmployeeData,  
+    triggerText,
+    triggerDescription,
+    fileInputRef,
+    handleFileChange,
+    handleButtonClick,
+    file,
+    handleSubmit,
+    companies,
+    isEmployeeData,
     isPayslipData,
     isCompanyData,
     isOpen,
@@ -200,17 +206,22 @@ export function DialogUpload({
       year: 0
     });
 
-    const [companyFormData, setCompanyFormData] = useState<{companyCode: string, company: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]}>({
+    const [companyFormData, setCompanyFormData] = useState<{companyCode: string, company: string, address: string, location: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]}>({
       companyCode: '',
       company: '',
+      address: '',
+      location: '',
       fields: [],
     });
 
+    const [isUpdateMode, setIsUpdateMode] = useState(false);
+
     const isPayslipDataVaild = isPayslipData && (!formData.month || !formData.year || !formData.company || !file);
     const isEmployeeDataVaild = isEmployeeData && !file;
-    const isCompanyDataVaild = isCompanyData && (!companyFormData.companyCode || !companyFormData.company || !companyFormData.fields.length);
+    const isCompanyCreateValid = isCompanyData && !isUpdateMode && (!companyFormData.companyCode || !companyFormData.company || !companyFormData.fields.length);
+    const isCompanyUpdateValid = isCompanyData && isUpdateMode && (!companyFormData.companyCode || !companyFormData.fields.length);
 
-    const isDisabled = isPayslipDataVaild || isEmployeeDataVaild || isCompanyDataVaild;
+    const isDisabled = isPayslipDataVaild || isEmployeeDataVaild || isCompanyCreateValid || isCompanyUpdateValid;
 
    
 
@@ -235,10 +246,48 @@ export function DialogUpload({
               <MonthYearPicker onSelect={(month, year) => setFormData({ ...formData, month, year })} isModal={true} />
             </div>}
             {isCompanyData && <div className="grid gap-3">
-              <Label htmlFor="username-1">Company Code</Label>
-              <Input value={companyFormData.companyCode} onChange={(e) => setCompanyFormData({ ...companyFormData, companyCode: e.target.value })} />
-              <Label htmlFor="username-1">Company Name</Label>
-              <Input value={companyFormData.company} onChange={(e) => setCompanyFormData({ ...companyFormData, company: e.target.value })} />
+              <div className="flex gap-2">
+                <Button 
+                  type="button" 
+                  variant={!isUpdateMode ? "default" : "outline"}
+                  onClick={() => {
+                    setIsUpdateMode(false);
+                    setCompanyFormData({ companyCode: '', company: '', address: '', location: '', fields: [] });
+                  }}
+                  className="flex-1"
+                >
+                  Create
+                </Button>
+                <Button 
+                  type="button" 
+                  variant={isUpdateMode ? "default" : "outline"}
+                  onClick={() => {
+                    setIsUpdateMode(true);
+                    setCompanyFormData({ ...companyFormData, company: '', address: '', location: '', fields: [] });
+                  }}
+                  className="flex-1"
+                >
+                  Update
+                </Button>
+              </div>
+              {isUpdateMode && companies && (
+                <div>
+                  <Label htmlFor="username-1">Select Company</Label>
+                  <CompanyPicker onSelect={(company) => setCompanyFormData({ ...companyFormData, companyCode: company })} companies={companies} isModal={true} />
+                </div>
+              )}
+              {!isUpdateMode && (
+                <>
+                  <Label htmlFor="username-1">Company Code</Label>
+                  <Input value={companyFormData.companyCode} onChange={(e) => setCompanyFormData({ ...companyFormData, companyCode: e.target.value })} />
+                  <Label htmlFor="username-1">Company Name</Label>
+                  <Input value={companyFormData.company} onChange={(e) => setCompanyFormData({ ...companyFormData, company: e.target.value })} />
+                  <Label htmlFor="username-1">Company Address</Label>
+                  <Input value={companyFormData.address} onChange={(e) => setCompanyFormData({ ...companyFormData, address: e.target.value })} />
+                  <Label htmlFor="username-1">Company Location</Label>
+                  <Input value={companyFormData.location} onChange={(e) => setCompanyFormData({ ...companyFormData, location: e.target.value })} />
+                </>
+              )}
               <Label htmlFor="username-1">Fields</Label>
               <Field fields={companyFormData.fields} setFields={(fields) => setCompanyFormData({ ...companyFormData, fields })} />
             </div>}
@@ -264,19 +313,13 @@ export function DialogUpload({
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button type="submit" disabled={isDisabled} onClick={(e) => handleSubmit(e, formData, companyFormData)}>Save changes</Button>
+            <Button type="submit" disabled={isDisabled} onClick={(e) => handleSubmit(e, formData, companyFormData, isUpdateMode)}>Save changes</Button>
           </DialogFooter>
         </DialogContent>
       </form>
     </Dialog>
   )
 }
-
-type FieldType = {
-    name: string;
-    category: "EARNING" | "DEDUCTION";
-    isRequired: boolean;
-  };
 
 const Field = ({
     fields,

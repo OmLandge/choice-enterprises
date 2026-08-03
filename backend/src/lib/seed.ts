@@ -135,16 +135,14 @@ async function main() {
   }
 
   // Create admin user
-  const hashedPassword = await bcrypt.hash('admin123', 10);
   const admin = await prisma.user.create({
     data: {
-      username: 'admin',
-      password: hashedPassword,
+      uanNo: 'CHOICE00001',
       name: 'Admin User',
       role: Role.ADMIN,
     },
   });
-  console.log(`Created admin user: ${admin.username}`);
+  console.log(`Created admin user: ${admin.uanNo}`);
 
   // Create employees and payslips for each company
   const currentDate = new Date();
@@ -169,6 +167,8 @@ async function main() {
           name: fullName,
           uanNo: faker.string.numeric(12),
           esiNo: faker.string.numeric(17),
+          fatherName: faker.person.fullName(),
+          sex: faker.helpers.arrayElement(["M", "F"])
         },
       });
       console.log(`Created employee: ${employee.name} (${employee.code})`);
@@ -176,8 +176,7 @@ async function main() {
       // Create user for employee
       const user = await prisma.user.create({
         data: {
-          username: `${firstName.toLowerCase()}.${lastName.toLowerCase()}`,
-          password: await bcrypt.hash('password123', 10),
+          uanNo: faker.string.numeric(12),
           name: fullName,
           role: Role.EMPLOYEE,
           employeeCode: employee.code,
@@ -193,14 +192,20 @@ async function main() {
         const year = targetDate.getFullYear();
         
         // Generate random values for payslip
-        const monthlyGross = faker.number.float({ min: 25000, max: 150000, fractionDigits: 2 });
+        const gross = faker.number.float({ min: 25000, max: 150000, fractionDigits: 2 });
         const daysWorked = faker.number.int({ min: 22, max: 26 });
+        const basic = faker.number.float({ min: 20000, max: 120000, fractionDigits: 2 });
+        const da = faker.number.float({ min: 5000, max: 20000, fractionDigits: 2 });
         const otHours = faker.number.int({ min: 0, max: 20 });
+        const designation = faker.helpers.arrayElement(["Skilled", "Unskilled"]);
+        const dateOfAdvance = faker.date.anytime().toISOString().split('T')[0];
+        const perDayRate = faker.number.float({min: 20000, max: 120000, fractionDigits: 2});
+        const perHourRate = faker.number.float({min: 20000, max: 120000, fractionDigits: 2});
         
         // Calculate gross wages (monthly + OT)
-        const hourlyRate = monthlyGross / (22 * 8); // Assuming 22 working days, 8 hours per day
+        const hourlyRate = gross / (22 * 8); // Assuming 22 working days, 8 hours per day
         const otWages = otHours * hourlyRate * 1.5; // 1.5x for OT
-        const grossWages = monthlyGross + otWages;
+        const grossWages = gross + otWages;
         
         // Calculate deductions (random percentage of gross)
         const totalDeduction = grossWages * faker.number.float({ min: 0.1, max: 0.3, fractionDigits: 2 });
@@ -214,11 +219,17 @@ async function main() {
             month,
             year,
             daysWorked,
+            basic,
+            da,
             otHours,
-            monthlyGross,
+            gross,
             grossWages,
             totalDeduction,
             netWages,
+            designation,
+            dateOfAdvance,
+            perDayRate,
+            perHourRate
           },
         });
 
@@ -228,10 +239,10 @@ async function main() {
           let value = 0;
           if (field.category === FieldCategory.EARNING) {
             // Earning fields are typically a percentage of basic pay
-            value = monthlyGross * faker.number.float({ min: 0.05, max: 0.4, fractionDigits: 2 });
+            value = gross * faker.number.float({ min: 0.05, max: 0.4, fractionDigits: 2 });
           } else {
             // Deduction fields are typically a smaller percentage
-            value = monthlyGross * faker.number.float({ min: 0.01, max: 0.1, fractionDigits: 2 });
+            value = gross * faker.number.float({ min: 0.01, max: 0.1, fractionDigits: 2 });
           }
           
           await prisma.payslipFieldValue.create({
