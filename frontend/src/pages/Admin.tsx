@@ -206,8 +206,16 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className={'custom-scroll overflow-y-auto bg-white border rounded-lg w-full mx-auto overflow-auto shadow-sm' + (docType === DocumentType.PAYSLIP ? ' max-h-[950px]' : ' max-h-[600px]')}>
-            {docType === 'Doc Type' && <div className='w-full flex justify-center items-center h-[300px] text-muted-foreground'>Please select document type, company and month-year</div>}
-            {!company && <div className='w-full flex justify-center items-center h-[300px] text-muted-foreground'>Please select document type, company and month-year</div>}
+           {docType === "Doc Type" ? (
+              <div className="w-full flex justify-center items-center h-[300px] text-muted-foreground">
+                Please select document type and month-year
+              </div>
+            ) : !company ? (
+              <div className="w-full flex justify-center items-center h-[300px] text-muted-foreground">
+                Please select company and month-year
+              </div>
+            ) : (
+              <>
             {docType === DocumentType.PAYSLIP && (
               <AdminPayslip
                 month={selectedMonth}
@@ -280,6 +288,8 @@ export default function AdminDashboard() {
                 year={selectedYear}
                 onPrint={(handler) => setPrintHandler(() => handler)}
               />
+            )}
+              </>
             )}
           </div>
         </div>
