@@ -23,9 +23,33 @@ export function StaffPayslip({ month, year, onPrint }: PayslipProps) {
   const [payslip, setPayslip] = useState([]);
   const [isPayslip, setIsPayslip] = useState<boolean>(false);
 
-  const handlePrint = useReactToPrint({
-    contentRef: payslipRef,
-  })
+  const handlePrint = () => {
+    const printContents = payslipRef.current?.innerHTML;
+
+    const printWindow = window.open("", "_blank");
+
+    if (!printWindow) return;
+
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>Payslip</title>
+            <link rel="stylesheet" href="/index.css" />
+        </head>
+        <body>
+            ${printContents}
+        </body>
+        </html>
+    `);
+
+    printWindow.document.close();
+
+    printWindow.focus();
+
+    printWindow.print();
+
+    printWindow.close();
+};
 
   useEffect(() => {
     getPayslip(month, year).then(data => {
