@@ -7,7 +7,7 @@ export const BasePayslip = ( {payslip }: {payslip: any} ) => {
     <div className="p-8 min-h-[1056px]">
       <div className="mb-6">
         <img
-          src="/choicelogo1.png"
+          src={`${window.location.origin}/choicelogo1.png`}
           alt="Choice Enterprises Logo"
           className="w-[150px] mb-4"
         />

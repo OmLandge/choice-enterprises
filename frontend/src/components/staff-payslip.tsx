@@ -23,31 +23,83 @@ export function StaffPayslip({ month, year, onPrint }: PayslipProps) {
   const [isPayslip, setIsPayslip] = useState<boolean>(false);
 
   const handlePrint = () => {
-    const printContents = payslipRef.current?.innerHTML;
+  if (!payslipRef.current) return;
 
-    const printWindow = window.open("", "_blank");
+  const printWindow = window.open("", "_blank");
 
-    if (!printWindow) return;
+  if (!printWindow) {
+    alert("Please allow popups to print.");
+    return;
+  }
 
-    printWindow.document.write(`
-        <html>
-        <head>
-            <title>Payslip</title>
-            <link rel="stylesheet" href="/index.css" />
-        </head>
-        <body>
-            ${printContents}
-        </body>
-        </html>
-    `);
+  // Copy all stylesheets
+  const styles = Array.from(document.querySelectorAll("link[rel='stylesheet'], style"))
+    .map((node) => node.outerHTML)
+    .join("");
 
-    printWindow.document.close();
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Payslip</title>
+        ${styles}
+        <style>
+          html, body {
+            margin: 0;
+            padding: 0;
+            background: white;
+          }
 
+          @page {
+            size: A4;
+            margin: 10mm;
+          }
+
+          img {
+            max-width: 100%;
+          }
+        </style>
+      </head>
+
+      <body>
+        ${payslipRef.current.outerHTML}
+      </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+
+  // Wait for images to load
+  const images = printWindow.document.images;
+
+  if (images.length === 0) {
     printWindow.focus();
-
     printWindow.print();
-
     printWindow.close();
+    return;
+  }
+
+  let loaded = 0;
+
+  const print = () => {
+    loaded++;
+    if (loaded === images.length) {
+      setTimeout(() => {
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+      }, 300);
+    }
+  };
+
+  Array.from(images).forEach((img) => {
+    if (img.complete) {
+      print();
+    } else {
+      img.onload = print;
+      img.onerror = print;
+    }
+  });
 };
 
   useEffect(() => {
