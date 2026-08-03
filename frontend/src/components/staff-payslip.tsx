@@ -23,8 +23,6 @@ export function StaffPayslip({ month, year, onPrint }: PayslipProps) {
   const [payslip, setPayslip] = useState([]);
   const [isPayslip, setIsPayslip] = useState<boolean>(false);
 
-  handlePrint(payslipRef, "Payslip")
-
   useEffect(() => {
     getPayslip(month, year).then(data => {
         if(data.length === 0) {
