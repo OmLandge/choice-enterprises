@@ -8,6 +8,7 @@ import { contactSchema } from './lib/zodSchemas';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 app.use(express.json());
@@ -45,6 +46,6 @@ app.post('/contact', async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log('Server is running on port http://localhost:3000');
+app.listen(PORT, () => {
+  console.log('Server is running on port ' + PORT);
 });

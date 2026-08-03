@@ -137,7 +137,7 @@ async function main() {
   // Create admin user
   const admin = await prisma.user.create({
     data: {
-      uanNo: 'CHOICE9881464331',
+      uanNo: 'CHOICE00001',
       name: 'Admin User',
       role: Role.ADMIN,
     },
