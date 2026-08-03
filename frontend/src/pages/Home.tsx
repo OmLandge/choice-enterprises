@@ -247,11 +247,7 @@ export default function Home() {
         }}
       >
         <div
-          className="absolute inset-0"
-          style={{
-            background: "url('assets/logo.png') center/contain no-repeat",
-            opacity: 0.1,
-          }}
+          className="absolute inset-0 bg-[url('/assets/logo.png')] bg-center bg-[length:550px] sm:bg-contain bg-no-repeat opacity-10"
         />
         <div className="relative z-10 max-w-3xl px-8">
           <h1
