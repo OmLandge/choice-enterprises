@@ -29,6 +29,15 @@ export const companySchema = z.object({
     })),
 });
 
+export const companyFieldsSchema = z.object({
+    companyCode: z.string(),
+    fields: z.array(z.object({
+        name: z.string(),
+        category: z.enum(["EARNING", "DEDUCTION"]),
+        isRequired: z.boolean(),
+    })),
+});
+
 export const employeeSchema = z.object({
     employees: z.array(z.object({
     employeeCode: z.string(),

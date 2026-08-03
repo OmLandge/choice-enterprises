@@ -1,7 +1,7 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { checkAuth } from '../lib/checkAuth';
-import { companySchema, employeeSchema, payslipSchema } from '../lib/zodSchemas';
+import { companySchema, employeeSchema, payslipSchema, companyFieldsSchema } from '../lib/zodSchemas';
 import * as bcrypt from 'bcrypt';
 
 const adminRouter = express.Router();
@@ -32,6 +32,11 @@ adminRouter.get('/bulkPayslips', async (req, res) => {
                 }
             },
             fieldValues:{
+                where:{
+                    value:{
+                        not:null
+                    }
+                },
                 select: {
                     fieldId: true,
                     value: true,
@@ -46,7 +51,7 @@ adminRouter.get('/bulkPayslips', async (req, res) => {
         },
     });
 
-    if (!payslips) {
+    if (payslips.length === 0) {
         res.status(404).json({ message: 'No payslips found' });
         return;
     }
@@ -96,7 +101,7 @@ adminRouter.get('/overtimeRegister', async (req, res) => {
                 perHourRate: true,
             },
         });
-        if (!overtimeRegister) {
+        if (overtimeRegister.length === 0) {
             res.status(404).json({ message: 'No overtime register found' });
             return;
         }
@@ -140,7 +145,7 @@ adminRouter.get('/leaveRegister', async (req, res) => {
                 da: true
             },
         });
-        if (!leaveRegister) {
+        if (leaveRegister.length === 0) {
             res.status(404).json({ message: 'No leave register found' });
             return;
         }
@@ -204,7 +209,7 @@ adminRouter.get('/houseRentRegister', async (req, res) => {
                 },
             },
         });
-        if (!houseRentRegister) {
+        if (houseRentRegister.length === 0) {
             res.status(404).json({ message: 'No house rent register found' });
             return;
         }
@@ -272,7 +277,7 @@ adminRouter.get('/advanceRegister', async (req, res) => {
                 dateOfAdvance: true
             },
         });
-        if (!advanceRegister) {
+        if (advanceRegister.length === 0) {
             res.status(404).json({ message: 'No advance register found' });
             return;
         }
@@ -317,7 +322,7 @@ adminRouter.get("/companies", async (req, res) => {
     }
     try {
         const companies = await prisma.company.findMany();
-        if (!companies) {
+        if (companies.length === 0) {
             res.status(404).json({ message: 'No companies found' });
             return;
         }
@@ -337,7 +342,7 @@ adminRouter.get("/contacts", async (req, res) => {
     }
     try {
         const contacts = await prisma.contact.findMany();
-        if (!contacts) {
+        if (contacts.length === 0) {
             res.status(404).json({ message: 'No contacts found' });
             return;
         }
@@ -357,7 +362,7 @@ adminRouter.get("/total-contacts", async (req, res) => {
     }
     try {
         const contacts = await prisma.contact.count();
-        if (!contacts) {
+        if (contacts === 0) {
             res.status(404).json({ message: 'No contacts found' });
             return;
         }
@@ -377,7 +382,7 @@ adminRouter.get("/total-employees", async (req, res) => {
     }
     try {
         const employees = await prisma.employee.count();
-        if (!employees) {
+        if (employees === 0) {
             res.status(404).json({ message: 'No employees found' });
             return;
         }
@@ -411,10 +416,6 @@ adminRouter.post("/company", async (req, res) => {
                 location,
             },
         });
-        if(!companyRes) {
-            res.status(400).json({ message: 'Company insertion failed' });
-            return;
-        }
         const companyFieldsRes = await prisma.companyPayslipField.createMany({
             data: fields.map((field) => ({
                 companyCode: companyRes.code,
@@ -423,15 +424,49 @@ adminRouter.post("/company", async (req, res) => {
                 isRequired: field.isRequired,
             })),
         });
-        if(!companyFieldsRes) {
-            res.status(400).json({ message: 'Company fields insertion failed' });
-            return;
-        }
     }catch(err) {
         res.status(400).json({ message: 'Insertion failed' });
         return;
     }
     res.status(200).json({message: "Insertion successful"});
+})
+
+adminRouter.post("/company-fields", async (req, res) => {
+    const body = req.body;
+    const zRes = companyFieldsSchema.safeParse(body);
+    if (!zRes.success) {
+        res.status(400).json({ message: 'Invalid request body' });
+        return;
+    }
+    const { companyCode, fields } = zRes.data;
+    const token = req.headers.authorization as string;
+    const isAuth = checkAuth(token);
+    if (!isAuth) {
+        res.status(401).json({ message: 'Unauthorized' });
+        return;
+    }
+    try {
+        const company = await prisma.company.findUnique({
+            where: { code: companyCode },
+        });
+        if (!company) {
+            res.status(404).json({ message: 'Company not found' });
+            return;
+        }
+        const companyFieldsRes = await prisma.companyPayslipField.createMany({
+            data: fields.map((field) => ({
+                companyCode: companyCode,
+                name: field.name,
+                category: field.category,
+                isRequired: field.isRequired,
+            })),
+            skipDuplicates: true,
+        });
+    }catch(err) {
+        res.status(400).json({ message: 'Insertion failed' });
+        return;
+    }
+    res.status(200).json({message: "Fields added successfully"});
 })
 
 adminRouter.post("/employee", async(req, res) => {
@@ -458,10 +493,6 @@ adminRouter.post("/employee", async(req, res) => {
                 sex: employee.sex,
             })),
         });
-        if(!employeeRes) {
-            res.status(400).json({ message: 'Employee insertion failed' });
-            return;
-        }
         const userRes = await prisma.user.createMany({
             data: zRes.data.employees.map((employee) => ({
                 uanNo: employee.uanNo,
@@ -470,10 +501,6 @@ adminRouter.post("/employee", async(req, res) => {
                 employeeCode: employee.employeeCode,
             })),
         });
-        if(!userRes) {
-            res.status(400).json({ message: 'User insertion failed' });
-            return;
-        }
     }catch(err) {
         res.status(400).json({ message: 'Insertion failed' });
         return;
@@ -512,6 +539,11 @@ adminRouter.post("/payslips", async(req, res) => {
         "da",
       ];
     try {
+        const fieldIds = await prisma.companyPayslipField.findMany({
+            where: {
+                companyCode: formData.company,
+            },
+        });
         for(const payslip of payslips) {
             const payslipRes = await prisma.payslip.create({
                 data: {
@@ -533,22 +565,13 @@ adminRouter.post("/payslips", async(req, res) => {
                     perHourRate: payslip.perHourRate,
                 }
             })
-            if(!payslipRes) {
-                res.status(400).json({ message: 'Payslip insertion failed' });
-                return;
-            }
             const customFields = Object.entries(payslip).filter(([key]) => !fixedFields.includes(key));
-            const fieldIds = await prisma.companyPayslipField.findMany({
-                where: {
-                    companyCode: formData.company,
-                },
-            });
-            fieldIds.forEach((field) => {
-                if(!customFields.find(([key]) => key === field.name)) {
-                    res.status(400).json({ message: 'Field values insertion failed' });
+            for(const field of fieldIds) {
+                if(field.isRequired && !customFields.find(([key]) => key === field.name)) {
+                    res.status(400).json({ message: `Required field ${field.name} is missing from payslip data` });
                     return;
                 }
-            })
+            }
             const fieldValues = await prisma.payslipFieldValue.createMany({
                 data: customFields.map(([key, value]) => ({
                     payslipId: payslipRes.id,
@@ -556,14 +579,15 @@ adminRouter.post("/payslips", async(req, res) => {
                     value: Number(value),
                 })),
             });
-            if(!fieldValues) {
-                res.status(400).json({ message: 'Field values insertion failed' });
-                return;
-            }
         }
         }catch(err) {
-        res.status(400).json({ message: 'Insertion failed' });
-        return;
+            console.log(err)
+            if(err && typeof err === 'object' && 'code' in err && err.code === 'P2002') {
+                res.status(409).json({ message: 'A payslip for this employee already exists for the selected month and year' });
+                return;
+            }
+            res.status(400).json({ message: 'Insertion failed' });
+            return;
     }
     res.status(200).json({message: "Insertion successful"});
 })

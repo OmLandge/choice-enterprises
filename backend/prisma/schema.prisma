@@ -122,7 +122,7 @@ model PayslipFieldValue {
   payslip   Payslip             @relation(fields: [payslipId], references: [id])
   fieldId   Int                 // Foreign Key to CompanyPayslipField
   field     CompanyPayslipField @relation(fields: [fieldId], references: [id])
-  value     Float               // Value of the custom field (Amount or Percentage)
+  value     Float?               // Value of the custom field (Amount or Percentage)
   createdAt DateTime            @default(now())
   updatedAt DateTime            @updatedAt
 

@@ -27,16 +27,6 @@ userRouter.get('/payslip', async (req, res) => {
         return;
     }
     const userCode = user.employeeCode;
-    const payslipid = await prisma.payslip.findFirst({
-        where: {
-            employeeCode: userCode as string,
-            month: Number(month),
-            year: Number(year),
-        },
-        select: {
-            id: true,
-        }
-    });
     const payslip = await prisma.payslip.findFirst({
         where: {
             employeeCode: userCode as string,
@@ -53,9 +43,6 @@ userRouter.get('/payslip', async (req, res) => {
                 }
             },
             fieldValues: {
-                where:{
-                    payslipId: payslipid?.id
-                },
                 select: {
                     fieldId: true,
                     value: true,
@@ -106,15 +93,15 @@ userRouter.get("/total-payslips", async (req, res) => {
             employeeCode: user.employeeCode as string,
         },
     });
+    if (payslipsCount === 0) {
+        res.status(404).json({ message: 'No payslips found' });
+        return;
+    }
     const employeeDetails = await prisma.employee.findUnique({
         where: {
             code: user.employeeCode as string,
         },
     });
-    if (!payslipsCount) {
-        res.status(404).json({ message: 'No payslips found' });
-        return;
-    }
     res.status(200).json({ count: payslipsCount, employeeDetails });
     }catch(err){
         res.status(400).json({ message: 'Failed to fetch payslips' });
