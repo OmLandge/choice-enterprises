@@ -51,7 +51,6 @@ export function StaffPayslip({ month, year, onPrint }: PayslipProps) {
   setTimeout(() => {
     printWindow.focus();
     printWindow.print();
-    printWindow.close();
   }, 1000);
 };
 
