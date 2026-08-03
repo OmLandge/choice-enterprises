@@ -32,5 +32,5 @@ export const handlePrint = (ref: RefObject<HTMLDivElement>, title: string) => {
   }, 1000);
   setTimeout(() => {
     printWindow.close();
-  }, 2000);
+  }, 6000);
 };
