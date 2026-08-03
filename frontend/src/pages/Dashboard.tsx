@@ -124,6 +124,7 @@ export default function Dashboard() {
               size="icon"
               onClick={() => printHandler?.()}
               title="Print Payslip"
+              className='p-4'
             >
               <Printer className="h-4 w-4" />
             </Button>
