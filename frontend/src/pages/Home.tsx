@@ -367,7 +367,7 @@ export default function Home() {
           >
             Get in Touch
           </a>
-          <div className="text-sm text-gray-500 mt-2 flex items-center justify-center gap-1">
+          <div className="text-sm text-gray-500 mt-2 flex flex-col sm:flex-row items-center justify-center gap-1">
             <p>Trusted by 15+ leading companies •{" "}</p>
             <a
               href="tel:+919881464331"
