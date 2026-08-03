@@ -190,7 +190,7 @@ export default function AdminDashboard() {
         <div className="space-y-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <h2 className="text-lg font-semibold">Employee Payslip</h2>
-            <div className='flex items-center gap-1 sm:gap-4 w-full sm:w-auto overflow-x-auto sm:overflow-x-visible'>
+            <div className='flex items-center gap-1 sm:gap-4 w-full sm:w-auto overflow-x-auto md:overflow-x-visible'>
               <Button 
                 variant="outline" 
                 onClick={() => printHandler?.()}
