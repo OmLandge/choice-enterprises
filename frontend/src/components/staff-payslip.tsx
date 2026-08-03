@@ -1,6 +1,6 @@
 import { BACKEND_URL } from '@/config'
 import axios from 'axios'
-import { RefObject, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { BasePayslip } from './base-payslip'
 import { PayslipProps } from '@/lib/types'
 import { handlePrint } from '@/lib/print'
