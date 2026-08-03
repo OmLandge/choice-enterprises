@@ -1,8 +1,9 @@
 import { BACKEND_URL } from '@/config'
 import axios from 'axios'
-import { useEffect, useRef, useState } from 'react'
+import { RefObject, useEffect, useRef, useState } from 'react'
 import { BasePayslip } from './base-payslip'
 import { PayslipProps } from '@/lib/types'
+import { handlePrint } from '@/lib/print'
 
 const getPayslip = async (month: number, year: number) => {
   const response = await axios.get(`${BACKEND_URL}/api/user/payslip?month=${month}&year=${year}`,{
@@ -22,37 +23,7 @@ export function StaffPayslip({ month, year, onPrint }: PayslipProps) {
   const [payslip, setPayslip] = useState([]);
   const [isPayslip, setIsPayslip] = useState<boolean>(false);
 
-  const handlePrint = () => {
-  if (!payslipRef.current) return;
-
-  const printWindow = window.open("", "_blank");
-
-  if (!printWindow) {
-    alert("Please allow popups.");
-    return;
-  }
-
-  // Copy styles
-  document
-    .querySelectorAll('link[rel="stylesheet"], style')
-    .forEach((node) => {
-      printWindow.document.head.appendChild(node.cloneNode(true));
-    });
-
-  const clone = payslipRef.current.cloneNode(true);
-
-  printWindow.document.body.appendChild(clone);
-
-  printWindow.document.title = "Payslip";
-
-  printWindow.document.body.style.margin = "0";
-  printWindow.document.body.style.background = "white";
-
-  setTimeout(() => {
-    printWindow.focus();
-    printWindow.print();
-  }, 1000);
-};
+  handlePrint(payslipRef, "Payslip")
 
   useEffect(() => {
     getPayslip(month, year).then(data => {
@@ -73,7 +44,7 @@ export function StaffPayslip({ month, year, onPrint }: PayslipProps) {
 
   useEffect(() => {
     if (onPrint) {
-      onPrint(handlePrint);
+      onPrint(() => handlePrint(payslipRef, "Payslip"));
     }
   }, [handlePrint, onPrint]);
 
