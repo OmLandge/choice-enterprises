@@ -1,8 +1,6 @@
-import { PrismaClient, Role, FieldCategory } from '@prisma/client';
+import { Role, FieldCategory } from '@prisma/client';
 import { faker } from '@faker-js/faker';
-import * as bcrypt from 'bcrypt';
-
-const prisma = new PrismaClient();
+import prisma from '../lib/prisma';
 
 // Utility function to generate a random date within a range
 function randomDate(start: Date, end: Date): Date {

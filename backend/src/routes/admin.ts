@@ -1,11 +1,9 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
 import { checkAuth } from '../lib/checkAuth';
 import { companySchema, employeeSchema, payslipSchema, companyFieldsSchema } from '../lib/zodSchemas';
-import * as bcrypt from 'bcrypt';
+import prisma from '../lib/prisma';
 
 const adminRouter = express.Router();
-const prisma = new PrismaClient();
 
 adminRouter.get('/bulkPayslips', async (req, res) => {
     const { companyCode, month, year } = req.query;

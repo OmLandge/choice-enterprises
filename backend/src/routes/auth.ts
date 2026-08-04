@@ -1,10 +1,9 @@
-import { PrismaClient } from '@prisma/client';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import { loginSchema } from '../lib/zodSchemas';
+import prisma from '../lib/prisma';
 
 const authRouter = express.Router();
-const prisma = new PrismaClient();
 
 authRouter.post('/login', async (req, res) => {
   const body = req.body;

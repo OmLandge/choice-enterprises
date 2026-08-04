@@ -1,10 +1,9 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
 import { checkAuth } from '../lib/checkAuth';
 import { decode, JwtPayload } from 'jsonwebtoken';
+import prisma from '../lib/prisma';
 
 const userRouter = express.Router();
-const prisma = new PrismaClient();
 
 userRouter.get('/payslip', async (req, res) => {
     const { month, year } = req.query;

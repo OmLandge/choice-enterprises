@@ -5,9 +5,8 @@ import authRouter from './routes/auth';
 import adminRouter from './routes/admin';
 import userRouter from './routes/user';
 import { contactSchema } from './lib/zodSchemas';
-import { PrismaClient } from '@prisma/client';
+import prisma from './lib/prisma';
 
-const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3000;
 
 const app = express();
