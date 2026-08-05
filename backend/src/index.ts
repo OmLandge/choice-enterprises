@@ -11,7 +11,6 @@ const PORT = process.env.PORT || 3000;
 
 const app = express();
 app.use(express.json());
-console.log(process.env.FRONTEND_URL);
 app.use(
     cors({
         origin: process.env.FRONTEND_URL,
@@ -21,6 +20,13 @@ app.use(
 app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/user", userRouter);
+
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    message: "Backend is running",
+  });
+});
 
 app.post('/contact', async (req, res) => {
   const body = req.body;
