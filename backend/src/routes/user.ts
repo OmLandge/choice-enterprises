@@ -42,6 +42,11 @@ userRouter.get('/payslip', async (req, res) => {
                 }
             },
             fieldValues: {
+                where:{
+                    value:{
+                        not:null
+                    }
+                },
                 select: {
                     fieldId: true,
                     value: true,
