@@ -205,7 +205,7 @@ const totals = getTotals(
                 </td>
 
                 <td className="border border-black p-1 text-center">
-                  Monthly Paid
+                  
                 </td>
                 <td className="border border-black p-1 text-center">
                   {(data.basic + data.da).toFixed(2)}
