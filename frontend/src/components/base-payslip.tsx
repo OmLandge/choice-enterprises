@@ -31,7 +31,7 @@ export const BasePayslip = ( {payslip }: {payslip: any} ) => {
             <span>{payslip.employee?.esiNo}</span>
           </div>
           <div>
-            <span className="font-semibold">Rate: </span>
+            <span className="font-semibold">RATE: </span>
             <span>{payslip?.gross}</span>
           </div>
           <div>
