@@ -89,8 +89,8 @@ model Payslip {
   companyCode    String    // Company code for mapping
   month          Int       // 1-12
   year           Int
-  daysWorked     Int     // Days worked in the month
-  otHours        Int     // OT hours
+  daysWorked     Float     // Days worked in the month
+  otHours        Float     // OT hours
   gross   Float     // Monthly gross
   grossWages     Float     // Total gross wages
   totalDeduction Float     // Total deductions
