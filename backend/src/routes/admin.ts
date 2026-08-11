@@ -510,6 +510,7 @@ adminRouter.post("/payslips", async(req, res) => {
     const body = req.body;
     const zRes = payslipSchema.safeParse(body);
     console.log("zRes", zRes);
+    console.log("zRes.error", JSON.stringify(zRes.error));
     console.log("body", JSON.stringify(body));
     if (!zRes.success) {
         res.status(400).json({ message: "Invalid payslip details" });
