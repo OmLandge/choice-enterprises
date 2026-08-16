@@ -120,7 +120,7 @@ export default function UploadData({ isCompanyData, isPayslipData, isEmployeeDat
     setIsOpen(false);
   }
 
-  const handleSubmit = async (e: React.FormEvent, formData: {company: string, month?: number, year?: number}, companyFormData?: {companyCode: string, company: string, address: string, location: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]}, isUpdate?: boolean) => {
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>, formData: {company: string, month?: number, year?: number}, companyFormData?: {companyCode: string, company: string, address: string, location: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]}, isUpdate?: boolean) => {
     e.preventDefault();
     if(isCompanyData) {
       if(isUpdate) {
@@ -227,7 +227,7 @@ export function DialogUpload({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <form>
+      {/* <form> */}
         <DialogTrigger asChild>
           <Button variant="outline" className='text-xs px-2 py-0'>{triggerText}</Button>
         </DialogTrigger>
@@ -313,10 +313,10 @@ export function DialogUpload({
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button type="submit" disabled={isDisabled} onClick={(e) => handleSubmit(e, formData, companyFormData, isUpdateMode)}>Save changes</Button>
+            <Button type="button" disabled={isDisabled} onClick={(e) => handleSubmit(e, formData, companyFormData, isUpdateMode)}>Save changes</Button>
           </DialogFooter>
         </DialogContent>
-      </form>
+      {/* </form> */}
     </Dialog>
   )
 }

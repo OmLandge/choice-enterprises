@@ -134,7 +134,7 @@ export interface DialogUploadProps {
     handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     handleButtonClick: (e: React.MouseEvent) => void;
     file: File | null;
-    handleSubmit: (e: React.FormEvent, formData: {company: string, month?: number, year?: number}, companyFormData?: {companyCode: string, company: string, address: string, location: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]}, isUpdate?: boolean) => void;
+    handleSubmit: (e: React.MouseEvent<HTMLButtonElement>, formData: {company: string, month?: number, year?: number}, companyFormData?: {companyCode: string, company: string, address: string, location: string, fields: {name: string, category: "EARNING" | "DEDUCTION", isRequired: boolean}[]}, isUpdate?: boolean) => void;
     companies?: any[];
     isEmployeeData?: boolean;
     isCompanyData?: boolean;
