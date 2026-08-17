@@ -1,6 +1,9 @@
 import { RefObject } from "react";
 
-export const handlePrint = (ref: RefObject<HTMLDivElement>, title: string) => {
+export const handlePrint = (
+  ref: RefObject<HTMLDivElement>,
+  title: string
+) => {
   if (!ref.current) return;
 
   const printWindow = window.open("", "_blank");
@@ -10,15 +13,14 @@ export const handlePrint = (ref: RefObject<HTMLDivElement>, title: string) => {
     return;
   }
 
-  // Copy styles
   document
     .querySelectorAll('link[rel="stylesheet"], style')
     .forEach((node) => {
       printWindow.document.head.appendChild(node.cloneNode(true));
     });
 
-  // Remove page margins
   const style = printWindow.document.createElement("style");
+
   style.textContent = `
     @page {
       margin: 0;
@@ -30,19 +32,24 @@ export const handlePrint = (ref: RefObject<HTMLDivElement>, title: string) => {
       background: white;
     }
   `;
+
   printWindow.document.head.appendChild(style);
 
-  const clone = ref.current.cloneNode(true);
-  printWindow.document.body.appendChild(clone);
+  printWindow.document.body.appendChild(
+    ref.current.cloneNode(true)
+  );
 
   printWindow.document.title = title;
 
-  setTimeout(() => {
+  printWindow.onload = () => {
     printWindow.focus();
-    printWindow.print();
-  }, 1000);
 
-  setTimeout(() => {
-    printWindow.close();
-  }, 6000);
+    printWindow.onafterprint = () => {
+      printWindow.close();
+    };
+
+    printWindow.print();
+  };
+
+  printWindow.document.close();
 };
