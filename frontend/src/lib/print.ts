@@ -1,6 +1,9 @@
 import { RefObject } from "react";
 
-export const handlePrint = (ref: RefObject<HTMLDivElement>, title: string) => {
+export const handlePrint = (
+  ref: RefObject<HTMLDivElement>,
+  title: string
+) => {
   if (!ref.current) return;
 
   const printWindow = window.open("", "_blank");
@@ -10,14 +13,12 @@ export const handlePrint = (ref: RefObject<HTMLDivElement>, title: string) => {
     return;
   }
 
-  // Copy styles
   document
     .querySelectorAll('link[rel="stylesheet"], style')
     .forEach((node) => {
       printWindow.document.head.appendChild(node.cloneNode(true));
     });
 
-  // Remove page margins
   const style = printWindow.document.createElement("style");
   style.textContent = `
     @page {
@@ -30,6 +31,7 @@ export const handlePrint = (ref: RefObject<HTMLDivElement>, title: string) => {
       background: white;
     }
   `;
+
   printWindow.document.head.appendChild(style);
 
   const clone = ref.current.cloneNode(true);
@@ -37,12 +39,23 @@ export const handlePrint = (ref: RefObject<HTMLDivElement>, title: string) => {
 
   printWindow.document.title = title;
 
-  setTimeout(() => {
+  printWindow.addEventListener("afterprint", () => {
+    setTimeout(() => {
+      printWindow.close();
+    }, 500);
+  });
+
+  // Give the new window time to load styles/content
+  printWindow.addEventListener("load", () => {
     printWindow.focus();
     printWindow.print();
-  }, 1000);
+  });
 
+  // Fallback in case load has already fired
   setTimeout(() => {
-    printWindow.close();
-  }, 6000);
+    if (!printWindow.closed) {
+      printWindow.focus();
+      printWindow.print();
+    }
+  }, 500);
 };
