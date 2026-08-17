@@ -20,7 +20,6 @@ export const handlePrint = (
     });
 
   const style = printWindow.document.createElement("style");
-
   style.textContent = `
     @page {
       margin: 0;
@@ -35,21 +34,26 @@ export const handlePrint = (
 
   printWindow.document.head.appendChild(style);
 
-  printWindow.document.body.appendChild(
-    ref.current.cloneNode(true)
-  );
+  const clone = ref.current.cloneNode(true);
+  printWindow.document.body.appendChild(clone);
 
   printWindow.document.title = title;
 
-  printWindow.onload = () => {
+  printWindow.addEventListener("afterprint", () => {
+    printWindow.close();
+  });
+
+  // Give the new window time to load styles/content
+  printWindow.addEventListener("load", () => {
     printWindow.focus();
-
-    printWindow.onafterprint = () => {
-      printWindow.close();
-    };
-
     printWindow.print();
-  };
+  });
 
-  printWindow.document.close();
+  // Fallback in case load has already fired
+  setTimeout(() => {
+    if (!printWindow.closed) {
+      printWindow.focus();
+      printWindow.print();
+    }
+  }, 500);
 };
