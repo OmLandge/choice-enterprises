@@ -42,7 +42,7 @@ export const handlePrint = (
   printWindow.addEventListener("afterprint", () => {
     setTimeout(() => {
       printWindow.close();
-    }, 500);
+    }, 1000);
   });
 
   // Give the new window time to load styles/content
